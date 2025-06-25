@@ -2307,92 +2307,91 @@
             return students;
         }
 
-        // 집계 데이터 로드 (완전히 새로 작성)
+        // 집계 데이터 로드 (원본 코드 기반으로 복원)
         function loadSummaryData() {
-            console.log('📊 새로운 집계 데이터 로드 시작...');
-            
-            // 먼저 로컬 스토리지에서 직접 읽어오기
-            const rawData = localStorage.getItem('submittedReports');
-            console.log('💾 로컬 스토리지 원본 데이터:', rawData);
-            
-            let reportsData = {};
-            
-            if (rawData) {
-                try {
-                    const parsed = JSON.parse(rawData);
-                    console.log('📋 파싱된 데이터:', parsed);
-                    console.log('📋 데이터 타입:', typeof parsed, '배열 여부:', Array.isArray(parsed));
-                    
-                    if (Array.isArray(parsed)) {
-                        console.log('🔄 배열 데이터를 객체로 변환 시작...');
-                        
-                        // 배열의 각 항목 확인
-                        parsed.forEach((item, index) => {
-                            console.log(`📄 항목 ${index}:`, typeof item, item);
-                        });
-                        
-                        // 실제 변환 로직 - 더 간단하게
-                        console.log('🔄 임시로 테스트 데이터 생성...');
-                        const testDate = new Date().toDateString();
-                        reportsData[testDate] = {
-                            'A1': { building: 'A', floor: '1', current: 50, absent: 5, new: 2, checkout: 1, moveOut: 0, moveIn: 1, late: 3, manager: '테스트', timestamp: new Date().toISOString() },
-                            'B2': { building: 'B', floor: '2', current: 45, absent: 3, new: 1, checkout: 0, moveOut: 1, moveIn: 0, late: 2, manager: '테스트', timestamp: new Date().toISOString() },
-                            'D3': { building: 'D', floor: '3', current: 40, absent: 4, new: 0, checkout: 2, moveOut: 0, moveIn: 0, late: 1, manager: '테스트', timestamp: new Date().toISOString() }
-                        };
-                        
-                    } else if (typeof parsed === 'object' && parsed !== null) {
-                        reportsData = parsed;
-                    }
-                } catch (error) {
-                    console.error('❌ 데이터 파싱 오류:', error);
-                }
-            }
-            
-            console.log('📊 변환된 보고서 데이터:', reportsData);
+            console.log('📊 집계 데이터 로드 시작 (원본 방식)...');
             
             const today = new Date().toDateString();
             console.log('📅 오늘 날짜:', today);
             
-            // 사용 가능한 날짜들
-            const availableDates = Object.keys(reportsData);
-            console.log('📅 사용 가능한 날짜들:', availableDates);
+            // 로컬 스토리지에서 직접 데이터 읽기
+            const storedData = localStorage.getItem('submittedReports');
+            let allReports = {};
             
-            let targetDate = today;
-            let targetReports = reportsData[today] || {};
-            
-            // 오늘 데이터가 없으면 가장 최근 데이터 사용
-            if (Object.keys(targetReports).length === 0 && availableDates.length > 0) {
-                // 날짜 정렬 (최신순)
-                const sortedDates = availableDates.sort((a, b) => new Date(b) - new Date(a));
-                targetDate = sortedDates[0];
-                targetReports = reportsData[targetDate] || {};
-                console.log(`📅 최근 데이터 사용: ${targetDate}`);
+            if (storedData) {
+                try {
+                    allReports = JSON.parse(storedData);
+                    console.log('💾 저장된 보고서 데이터:', allReports);
+                } catch (error) {
+                    console.error('❌ 데이터 파싱 오류:', error);
+                    allReports = {};
+                }
             }
             
-            console.log(`📝 집계 대상 (${targetDate}):`, Object.keys(targetReports).length, '건');
-            console.log('📝 집계 대상 상세:', targetReports);
+            // 오늘 날짜의 보고서 가져오기 (원본 방식)
+            const todayReports = allReports[today] || {};
+            console.log(`📝 오늘 (${today}) 보고서:`, todayReports);
+            console.log(`📝 오늘 보고서 개수:`, Object.keys(todayReports).length);
             
-            // 집계 계산
-            let totalCounts = { current: 0, absent: 0, new: 0, checkout: 0, moveOut: 0, moveIn: 0, late: 0 };
-            let maleCounts = { current: 0, absent: 0, new: 0, checkout: 0, moveOut: 0, moveIn: 0, late: 0 };
-            let femaleCounts = { current: 0, absent: 0, new: 0, checkout: 0, moveOut: 0, moveIn: 0, late: 0 };
+            // 오늘 데이터가 없으면 가장 최근 데이터 사용
+            let useReports = todayReports;
+            let useDate = today;
             
-            Object.entries(targetReports).forEach(([key, report]) => {
-                console.log(`🔢 ${key} 집계:`, {
+            if (Object.keys(todayReports).length === 0) {
+                console.log('⚠️ 오늘 데이터 없음, 최근 데이터 검색...');
+                const allDates = Object.keys(allReports);
+                console.log('📅 사용 가능한 날짜들:', allDates);
+                
+                if (allDates.length > 0) {
+                    // 날짜 정렬 (최신순)
+                    const sortedDates = allDates.sort((a, b) => new Date(b) - new Date(a));
+                    useDate = sortedDates[0];
+                    useReports = allReports[useDate] || {};
+                    console.log(`📅 최근 데이터 사용: ${useDate}`, useReports);
+                }
+            }
+            
+            console.log(`🎯 집계 대상: ${useDate}, ${Object.keys(useReports).length}개 보고서`);
+            
+            // 집계 변수 초기화 (원본 방식)
+            let totalCounts = {
+                current: 0, absent: 0, new: 0, checkout: 0,
+                moveOut: 0, moveIn: 0, late: 0
+            };
+            
+            let maleCounts = {
+                current: 0, absent: 0, new: 0, checkout: 0,
+                moveOut: 0, moveIn: 0, late: 0
+            };
+            
+            let femaleCounts = {
+                current: 0, absent: 0, new: 0, checkout: 0,
+                moveOut: 0, moveIn: 0, late: 0
+            };
+            
+            // 보고서별 집계 (원본 방식과 동일)
+            Object.values(useReports).forEach(report => {
+                console.log('📊 보고서 처리:', {
                     building: report.building,
+                    floor: report.floor,
+                    manager: report.manager,
                     current: report.current,
                     absent: report.absent,
                     new: report.new,
-                    checkout: report.checkout
+                    checkout: report.checkout,
+                    moveOut: report.moveOut,
+                    moveIn: report.moveIn,
+                    late: report.late
                 });
                 
-                const current = parseInt(report.current) || 0;
-                const absent = parseInt(report.absent) || 0;
-                const newCount = parseInt(report.new) || 0;
-                const checkout = parseInt(report.checkout) || 0;
-                const moveOut = parseInt(report.moveOut) || 0;
-                const moveIn = parseInt(report.moveIn) || 0;
-                const late = parseInt(report.late) || 0;
+                // 숫자 안전 변환
+                const current = Number(report.current) || 0;
+                const absent = Number(report.absent) || 0;
+                const newCount = Number(report.new) || 0;
+                const checkout = Number(report.checkout) || 0;
+                const moveOut = Number(report.moveOut) || 0;
+                const moveIn = Number(report.moveIn) || 0;
+                const late = Number(report.late) || 0;
                 
                 // 전체 집계
                 totalCounts.current += current;
@@ -2403,8 +2402,10 @@
                 totalCounts.moveIn += moveIn;
                 totalCounts.late += late;
                 
-                // 성별 집계
+                // 성별 집계 (원본 방식)
                 const gender = genderMapping[report.building];
+                console.log(`🏢 ${report.building}동 → 성별: ${gender}`);
+                
                 if (gender === 'male') {
                     maleCounts.current += current;
                     maleCounts.absent += absent;
@@ -2424,26 +2425,43 @@
                 }
             });
             
-            console.log('🎯 최종 집계:');
+            console.log('🎯 집계 완료:');
             console.log('  📊 전체:', totalCounts);
             console.log('  👨 남학생:', maleCounts);
             console.log('  👩 여학생:', femaleCounts);
             
-            // UI 업데이트
-            updateSummaryUI(totalCounts, maleCounts, femaleCounts);
+            // UI 업데이트 (원본 방식)
+            document.getElementById('total-current').textContent = totalCounts.current;
+            document.getElementById('total-absent').textContent = totalCounts.absent;
+            document.getElementById('total-new').textContent = totalCounts.new;
+            document.getElementById('total-checkout').textContent = totalCounts.checkout;
+            document.getElementById('total-move-out').textContent = totalCounts.moveOut;
+            document.getElementById('total-move-in').textContent = totalCounts.moveIn;
+            document.getElementById('total-late').textContent = totalCounts.late;
             
-            // 동별 보고 현황 표시
-            displayBuildingReports(targetReports);
+            // 성별 현황 업데이트 (원본 방식)
+            document.getElementById('male-current').textContent = maleCounts.current;
+            document.getElementById('male-absent').textContent = maleCounts.absent;
+            document.getElementById('male-new').textContent = maleCounts.new;
+            document.getElementById('male-checkout').textContent = maleCounts.checkout;
             
-            // 메시지 표시
-            if (Object.keys(targetReports).length > 0) {
-                const isToday = targetDate === today;
+            document.getElementById('female-current').textContent = femaleCounts.current;
+            document.getElementById('female-absent').textContent = femaleCounts.absent;
+            document.getElementById('female-new').textContent = femaleCounts.new;
+            document.getElementById('female-checkout').textContent = femaleCounts.checkout;
+            
+            // 동별/층별 보고 현황 표시 (원본 방식)
+            displayBuildingReports(useReports);
+            
+            // 결과 메시지
+            if (Object.keys(useReports).length > 0) {
+                const isToday = useDate === today;
                 const message = isToday ? 
-                    `오늘 ${Object.keys(targetReports).length}개 보고서 집계 완료` :
-                    `최근 데이터 (${targetDate}) ${Object.keys(targetReports).length}개 보고서로 집계`;
+                    `오늘 ${Object.keys(useReports).length}개 보고서 집계 완료` :
+                    `최근 데이터 (${useDate}) ${Object.keys(useReports).length}개 보고서로 집계`;
                 showMessage(message, isToday ? 'success' : 'warning');
             } else {
-                showMessage('집계할 데이터가 없습니다', 'error');
+                showMessage('집계할 보고서 데이터가 없습니다', 'error');
             }
         }
         
