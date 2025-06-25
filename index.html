@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기숙사 인원보고 시스템</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .clock-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .clock {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            min-width: 300px;
+        }
+
+        .time-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .date-display {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .report-section {
+            /* 제거됨 - 항상 표시되므로 불필요 */
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid #4facfe;
+        }
+
+        .status-card.absent { border-left-color: #fa709a; }
+        .status-card.new { border-left-color: #43e97b; }
+        .status-card.checkout { border-left-color: #fee140; }
+        .status-card.move-out { border-left-color: #f093fb; }
+        .status-card.move-in { border-left-color: #38f9d7; }
+        .status-card.late { border-left-color: #764ba2; }
+
+        .status-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .status-card .count {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .status-card input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px;
+            color: white;
+            text-align: center;
+            width: 80px;
+            font-size: 1.2rem;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group select {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group select option {
+            background: #2d3748;
+            color: white;
+        }
+
+        .student-list {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .student-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 2fr;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .student-item .room {
+            color: #4facfe;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .student-item .name {
+            font-weight: 600;
+        }
+
+        .student-item select,
+        .student-item input {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #fee140 0%, #fa709a 100%);
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .button-group {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .checkbox-group {
+            margin: 20px 0;
+        }
+
+        .checkbox-group input {
+            margin-right: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .close {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .message.warning {
+            background: linear-gradient(135deg, #fee140 0%, #fa709a 100%);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .access-section {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .status-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .student-item {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 시계 -->
+        <div class="clock-container">
+            <div class="clock" id="current-time">
+                <div class="time-display" id="time-display">00:00:00</div>
+                <div class="date-display" id="date-display">2025년 6월 24일</div>
+            </div>
+        </div>
+
+        <!-- 헤더 -->
+        <div class="header">
+            <h1><i class="fas fa-building"></i> 기숙사 인원보고 시스템</h1>
+            <p>실시간 인원 현황 관리 및 보고</p>
+        </div>
+
+        <!-- 인원보고 섹션 (바로 표시) -->
+        <div id="report-section">
+            <!-- 인원 현황 카드 -->
+            <div class="status-grid">
+                <div class="status-card current">
+                    <h3><i class="fas fa-users"></i> 현재원</h3>
+                    <div class="count" id="current-count">0</div>
+                    <input type="number" id="current-input" placeholder="0" min="0">
+                </div>
+                <div class="status-card absent">
+                    <h3><i class="fas fa-bed"></i> 외박</h3>
+                    <div class="count" id="absent-count">0</div>
+                    <input type="number" id="absent-input" placeholder="0" min="0">
+                </div>
+                <div class="status-card new">
+                    <h3><i class="fas fa-user-plus"></i> 신규</h3>
+                    <div class="count" id="new-count">0</div>
+                    <input type="number" id="new-input" placeholder="0" min="0">
+                </div>
+                <div class="status-card checkout">
+                    <h3><i class="fas fa-sign-out-alt"></i> 퇴소</h3>
+                    <div class="count" id="checkout-count">0</div>
+                    <input type="number" id="checkout-input" placeholder="0" min="0">
+                </div>
+                <div class="status-card move-out">
+                    <h3><i class="fas fa-arrow-left"></i> 이동-</h3>
+                    <div class="count" id="move-out-count">0</div>
+                    <input type="number" id="move-out-input" placeholder="0" min="0">
+                </div>
+                <div class="status-card move-in">
+                    <h3><i class="fas fa-arrow-right"></i> 이동+</h3>
+                    <div class="count" id="move-in-count">0</div>
+                    <input type="number" id="move-in-input" placeholder="0" min="0">
+                </div>
+                <div class="status-card late">
+                    <h3><i class="fas fa-clock"></i> 등미</h3>
+                    <div class="count" id="late-count">0</div>
+                    <input type="number" id="late-input" placeholder="0" min="0">
+                </div>
+            </div>
+
+            <!-- 컨트롤 패널 -->
+            <div class="card">
+                <div class="control-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-user-tie"></i> 담당자</label>
+                        <select id="manager-select">
+                            <option value="">담당자 선택</option>
+                            <option value="이영운">이영운</option>
+                            <option value="김혜정">김혜정</option>
+                            <option value="이시우">이시우</option>
+                            <option value="고승완">고승완</option>
+                            <option value="남인달">남인달</option>
+                            <option value="조영권">조영권</option>
+                            <option value="황민철">황민철</option>
+                            <option value="김건희">김건희</option>
+                            <option value="강지훈">강지훈</option>
+                            <option value="송인수">송인수</option>
+                            <option value="김영현">김영현</option>
+                            <option value="이상민">이상민</option>
+                            <option value="나정우">나정우</option>
+                            <option value="진정현">진정현</option>
+                            <option value="원현주">원현주</option>
+                            <option value="김정아">김정아</option>
+                            <option value="김지현">김지현</option>
+                            <option value="김미경">김미경</option>
+                            <option value="유나경">유나경</option>
+                            <option value="윤소영">윤소영</option>
+                            <option value="신규1">신규1</option>
+                            <option value="신규2">신규2</option>
+                            <option value="신규3">신규3</option>
+                            <option value="신규4">신규4</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-building"></i> 동</label>
+                        <select id="building-select" onchange="updateFloors()">
+                            <option value="">동 선택</option>
+                            <option value="A">A동 (남학생)</option>
+                            <option value="B">B동 (남학생)</option>
+                            <option value="C">C동 (남학생)</option>
+                            <option value="D">D동 (여학생)</option>
+                            <option value="E">E동 (여학생)</option>
+                            <option value="F">F동 (남학생)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-layer-group"></i> 층</label>
+                        <select id="floor-select" onchange="loadStudentData()">
+                            <option value="">층 선택</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="revision-checkbox">
+                    <label for="revision-checkbox">수정보고 (기존 보고 덮어쓰기)</label>
+                </div>
+            </div>
+
+            <!-- 학생 목록 -->
+            <div class="card student-list" id="student-list">
+                <h3><i class="fas fa-users"></i> 학생 현황</h3>
+                <div id="student-grid">
+                    <!-- 동적으로 생성됩니다 -->
+                </div>
+            </div>
+
+            <!-- 액션 버튼 -->
+            <div class="button-group">
+                <button class="btn btn-success" onclick="submitReport()">
+                    <i class="fas fa-paper-plane"></i> 인원보고 제출
+                </button>
+                <button class="btn btn-warning" onclick="loadGoogleSheetData()">
+                    <i class="fas fa-sync-alt"></i> 데이터 새로고침
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달 -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">알림</h2>
+            <p id="modal-message"></p>
+            <div class="button-group">
+                <button class="btn" onclick="closeModal()">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let googleSheetData = [];
+        let submittedReports = JSON.parse(localStorage.getItem('submittedReports') || '{}');
+        
+        // API 설정
+        const GOOGLE_API_KEY = 'AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY';
+        const SPREADSHEET_ID = '1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc';
+        const SHEET_NAME = 'yulee';
+        const JANDI_WEBHOOK_URL = 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4';
+        
+        // 기숙사 구조
+        const dormitoryStructure = {
+            'A': {
+                1: { start: 101, end: 160, type: '1인실' },
+                2: { start: 201, end: 262, type: '1인실' },
+                3: { start: 301, end: 362, type: '1인실' },
+                4: { start: 401, end: 432, type: '3인실' }
+            },
+            'B': {
+                1: { start: 101, end: 140, type: '1인실' },
+                2: { start: 201, end: 241, type: '1인실' },
+                3: { start: 301, end: 341, type: '1인실' },
+                4: { start: 401, end: 421, type: '3인실' }
+            },
+            'C': {
+                1: { start: 101, end: 161, type: '1인실' },
+                2: { start: 201, end: 262, type: '1인실' },
+                3: { start: 301, end: 362, type: '1인실' },
+                4: { start: 401, end: 432, type: '3인실' }
+            },
+            'D': {
+                1: { start: 101, end: 144, type: '1인실' },
+                2: { start: 201, end: 245, type: '1인실' },
+                3: { start: 301, end: 345, type: '1인실' },
+                4: { start: 401, end: 423, type: '3인실' }
+            },
+            'E': {
+                1: { start: 101, end: 176, type: '1인실' },
+                2: { start: 201, end: 278, type: '1인실' },
+                3: { start: 301, end: 378, type: '1인실' },
+                4: { start: 401, end: 440, type: '3인실' }
+            },
+            'F': {
+                1: { start: 101, end: 132, type: '1인실' },
+                2: { start: 201, end: 233, type: '1인실' },
+                3: { start: 301, end: 333, type: '1인실' },
+                4: { start: 401, end: 417, type: '3인실' }
+            }
+        };
+
+        const genderMapping = {
+            'A': 'male', 'B': 'male', 'C': 'male', 'F': 'male',
+            'D': 'female', 'E': 'female'
+        };
+
+        // 시계 업데이트 함수
+        function updateClock() {
+            const now = new Date();
+            
+            // 시간 표시 (24시간 형식)
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            
+            // 날짜 표시
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+            const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+            const dayName = dayNames[now.getDay()];
+            const dateString = `${year}년 ${month}월 ${date}일 (${dayName})`;
+            
+            document.getElementById('time-display').textContent = timeString;
+            document.getElementById('date-display').textContent = dateString;
+        }
+
+        // 화면 전환 함수 제거됨 - 더 이상 필요없음
+
+        // 층 업데이트
+        function updateFloors() {
+            const building = document.getElementById('building-select').value;
+            const floorSelect = document.getElementById('floor-select');
+            
+            floorSelect.innerHTML = '<option value="">층 선택</option>';
+            
+            if (building && dormitoryStructure[building]) {
+                Object.keys(dormitoryStructure[building]).forEach(floor => {
+                    const floorInfo = dormitoryStructure[building][floor];
+                    const option = document.createElement('option');
+                    option.value = floor;
+                    option.textContent = `${floor}층 (${floorInfo.type})`;
+                    floorSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Google Sheets 데이터 로드
+        async function loadGoogleSheetData() {
+            showMessage('데이터를 불러오는 중...', 'warning');
+            
+            try {
+                const range = `${SHEET_NAME}!B:P`;
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}?key=${GOOGLE_API_KEY}`;
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const rows = data.values || [];
+                
+                googleSheetData = [];
+                
+                // 데이터 처리 (1~3층: 1인실)
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row[0]) {
+                        const roomCode = row[0].toString().trim();
+                        const building = roomCode.charAt(0).toUpperCase();
+                        const roomNumber = parseInt(roomCode.substring(1));
+                        
+                        if (roomNumber < 400) {
+                            googleSheetData.push({
+                                room: roomCode,
+                                name: row[1] || '미배정',
+                                status: row[2] || '',
+                                note: row[4] || '',
+                                gender: genderMapping[building] || '',
+                                is3PersonRoom: false
+                            });
+                        }
+                    }
+                }
+                
+                // 3인실 처리 (4층)
+                const tripleRoomRanges = {
+                    'A': { start: 188, rooms: { start: 401, end: 432 } },
+                    'B': { start: 406, rooms: { start: 401, end: 421 } },
+                    'C': { start: 654, rooms: { start: 401, end: 432 } },
+                    'D': { start: 884, rooms: { start: 401, end: 423 } },
+                    'E': { start: 1185, rooms: { start: 401, end: 440 } },
+                    'F': { start: 1403, rooms: { start: 401, end: 417 } }
+                };
+
+                Object.keys(tripleRoomRanges).forEach(building => {
+                    const range = tripleRoomRanges[building];
+                    let currentRowIndex = range.start - 1;
+                    
+                    for (let roomNum = range.rooms.start; roomNum <= range.rooms.end; roomNum++) {
+                        const roomCode = `${building}${roomNum}`;
+                        
+                        for (let bedNum = 1; bedNum <= 3; bedNum++) {
+                            if (currentRowIndex < rows.length && rows[currentRowIndex]) {
+                                const row = rows[currentRowIndex];
+                                googleSheetData.push({
+                                    room: `${roomCode}-${bedNum}`,
+                                    originalRoom: roomCode,
+                                    bedNumber: bedNum,
+                                    name: row[1] || '미배정',
+                                    status: row[2] || '',
+                                    note: row[4] || '',
+                                    gender: genderMapping[building] || '',
+                                    is3PersonRoom: true
+                                });
+                            }
+                            currentRowIndex++;
+                        }
+                    }
+                });
+                
+                showMessage(`${googleSheetData.length}건의 데이터를 불러왔습니다.`, 'success');
+                restorePersistentStates();
+                
+            } catch (error) {
+                console.error('데이터 로드 오류:', error);
+                showMessage('데이터 로드 실패. 모의 데이터로 전환합니다.', 'error');
+                generateMockData();
+            }
+        }
+
+        // 학생 데이터 로드
+        function loadStudentData() {
+            const building = document.getElementById('building-select').value;
+            const floor = document.getElementById('floor-select').value;
+            
+            if (!building || !floor) {
+                document.getElementById('student-list').style.display = 'none';
+                return;
+            }
+            
+            const floorInfo = dormitoryStructure[building][floor];
+            const studentGrid = document.getElementById('student-grid');
+            studentGrid.innerHTML = '';
+            
+            let counts = {
+                current: 0, absent: 0, new: 0, checkout: 0,
+                moveOut: 0, moveIn: 0, late: 0
+            };
+            
+            if (parseInt(floor) === 4) {
+                // 3인실 처리
+                for (let roomNum = floorInfo.start; roomNum <= floorInfo.end; roomNum++) {
+                    const roomCode = `${building}${roomNum}`;
+                    
+                    for (let bedNum = 1; bedNum <= 3; bedNum++) {
+                        const studentRoom = `${roomCode}-${bedNum}`;
+                        const student = googleSheetData.find(s => s.room === studentRoom);
+                        
+                        if (student) {
+                            addStudentToGrid(student, studentGrid);
+                            updateCounts(student, counts);
+                        }
+                    }
+                }
+            } else {
+                // 1인실 처리
+                for (let roomNum = floorInfo.start; roomNum <= floorInfo.end; roomNum++) {
+                    const roomCode = `${building}${roomNum}`;
+                    const student = googleSheetData.find(s => s.room === roomCode);
+                    
+                    if (student) {
+                        addStudentToGrid(student, studentGrid);
+                        updateCounts(student, counts);
+                    }
+                }
+            }
+            
+            // 현재원 재계산
+            const totalAssigned = counts.current + counts.absent + counts.new + counts.checkout + counts.moveOut + counts.moveIn;
+            counts.current = totalAssigned - counts.absent - counts.checkout;
+            
+            updateStatusCards(counts);
+            document.getElementById('student-list').style.display = 'block';
+        }
+
+        function addStudentToGrid(student, grid) {
+            const div = document.createElement('div');
+            div.className = 'student-item';
+            div.innerHTML = `
+                <div class="room">${student.room}</div>
+                <div class="name">${student.name}</div>
+                <select onchange="updateStudentStatus('${student.room}', this.value)">
+                    <option value="">상태 선택</option>
+                    <option value="정상" ${student.status === '정상' ? 'selected' : ''}>정상</option>
+                    <option value="외박" ${student.status === '외박' ? 'selected' : ''}>외박</option>
+                    <option value="퇴소" ${student.status === '퇴소' ? 'selected' : ''}>퇴소</option>
+                    <option value="신규" ${student.status === '신규' ? 'selected' : ''}>신규</option>
+                    <option value="이동-" ${student.status === '이동-' ? 'selected' : ''}>이동-</option>
+                    <option value="이동+" ${student.status === '이동+' ? 'selected' : ''}>이동+</option>
+                    <option value="등미" ${student.status === '등미' ? 'selected' : ''}>등미</option>
+                </select>
+                <input type="text" placeholder="비고" value="${student.note}" 
+                       onchange="updateStudentNote('${student.room}', this.value)">
+            `;
+            grid.appendChild(div);
+        }
+
+        function updateCounts(student, counts) {
+            if (student.name !== '미배정') {
+                switch (student.status) {
+                    case '외박': 
+                    case '퇴소': 
+                    case '등미': 
+                    case '이동-': 
+                        // 현재원에 포함하지 않음
+                        break;
+                    case '신규': counts.new++; break;
+                    case '이동+': counts.moveIn++; break;
+                    default: counts.current++; break;
+                }
+                
+                // 각 상태별 개별 카운트
+                switch (student.status) {
+                    case '외박': counts.absent++; break;
+                    case '퇴소': counts.checkout++; break;
+                    case '신규': /* 이미 위에서 처리됨 */ break;
+                    case '이동-': counts.moveOut++; break;
+                    case '이동+': /* 이미 위에서 처리됨 */ break;
+                    case '등미': counts.late++; break;
+                }
+            }
+        }
+
+        function updateStatusCards(counts) {
+            document.getElementById('current-count').textContent = counts.current;
+            document.getElementById('absent-count').textContent = counts.absent;
+            document.getElementById('new-count').textContent = counts.new;
+            document.getElementById('checkout-count').textContent = counts.checkout;
+            document.getElementById('move-out-count').textContent = counts.moveOut;
+            document.getElementById('move-in-count').textContent = counts.moveIn;
+            document.getElementById('late-count').textContent = counts.late;
+            
+            document.getElementById('current-input').value = counts.current;
+            document.getElementById('absent-input').value = counts.absent;
+            document.getElementById('new-input').value = counts.new;
+            document.getElementById('checkout-input').value = counts.checkout;
+            document.getElementById('move-out-input').value = counts.moveOut;
+            document.getElementById('move-in-input').value = counts.moveIn;
+            document.getElementById('late-input').value = counts.late;
+        }
+
+        // 학생 상태 업데이트
+        function updateStudentStatus(roomCode, status) {
+            const student = googleSheetData.find(s => s.room === roomCode);
+            if (student) {
+                student.status = status;
+                
+                // 외박, 등미 상태 저장
+                if (status === '외박' || status === '등미') {
+                    const persistentStates = JSON.parse(localStorage.getItem('persistentStates') || '{}');
+                    persistentStates[roomCode] = status;
+                    localStorage.setItem('persistentStates', JSON.stringify(persistentStates));
+                } else {
+                    const persistentStates = JSON.parse(localStorage.getItem('persistentStates') || '{}');
+                    delete persistentStates[roomCode];
+                    localStorage.setItem('persistentStates', JSON.stringify(persistentStates));
+                }
+                
+                loadStudentData();
+            }
+        }
+
+        // 학생 비고 업데이트
+        function updateStudentNote(roomCode, note) {
+            const student = googleSheetData.find(s => s.room === roomCode);
+            if (student) {
+                student.note = note;
+            }
+        }
+
+        // 저장된 상태 복원
+        function restorePersistentStates() {
+            const persistentStates = JSON.parse(localStorage.getItem('persistentStates') || '{}');
+            Object.keys(persistentStates).forEach(roomCode => {
+                const student = googleSheetData.find(s => s.room === roomCode);
+                if (student) {
+                    student.status = persistentStates[roomCode];
+                }
+            });
+        }
+
+        // 보고서 제출
+        async function submitReport() {
+            const manager = document.getElementById('manager-select').value;
+            const building = document.getElementById('building-select').value;
+            const floor = document.getElementById('floor-select').value;
+            const isRevision = document.getElementById('revision-checkbox').checked;
+            
+            if (!manager || !building || !floor) {
+                showModal('오류', '담당자, 동, 층을 모두 선택해주세요.');
+                return;
+            }
+            
+            const reportKey = `${building}${floor}`;
+            const today = new Date().toDateString();
+            
+            if (!isRevision && submittedReports[today] && submittedReports[today][reportKey]) {
+                showModal('중복 보고', '이미 오늘 해당 동/층에 대한 보고가 제출되었습니다.');
+                return;
+            }
+            
+            const reportData = {
+                manager: manager,
+                building: building,
+                floor: floor,
+                current: parseInt(document.getElementById('current-input').value) || 0,
+                absent: parseInt(document.getElementById('absent-input').value) || 0,
+                new: parseInt(document.getElementById('new-input').value) || 0,
+                checkout: parseInt(document.getElementById('checkout-input').value) || 0,
+                moveOut: parseInt(document.getElementById('move-out-input').value) || 0,
+                moveIn: parseInt(document.getElementById('move-in-input').value) || 0,
+                late: parseInt(document.getElementById('late-input').value) || 0,
+                timestamp: new Date().toISOString(),
+                students: getStudentDetails(building, floor)
+            };
+            
+            try {
+                await sendToJandi(reportData);
+                
+                if (!submittedReports[today]) {
+                    submittedReports[today] = {};
+                }
+                submittedReports[today][reportKey] = reportData;
+                localStorage.setItem('submittedReports', JSON.stringify(submittedReports));
+                
+                showMessage('보고서가 성공적으로 제출되었습니다.', 'success');
+                
+            } catch (error) {
+                console.error('보고서 제출 오류:', error);
+                showMessage('보고서 제출 중 오류가 발생했습니다.', 'error');
+            }
+        }
+
+        // 학생 상세 정보 수집
+        function getStudentDetails(building, floor) {
+            const students = {
+                absent: [], new: [], checkout: [],
+                moveOut: [], moveIn: [], late: []
+            };
+            
+            const floorInfo = dormitoryStructure[building][floor];
+            
+            if (parseInt(floor) === 4) {
+                // 3인실
+                for (let roomNum = floorInfo.start; roomNum <= floorInfo.end; roomNum++) {
+                    const roomCode = `${building}${roomNum}`;
+                    for (let bedNum = 1; bedNum <= 3; bedNum++) {
+                        const studentRoom = `${roomCode}-${bedNum}`;
+                        const student = googleSheetData.find(s => s.room === studentRoom);
+                        
+                        if (student && student.name !== '미배정') {
+                            const info = { room: student.room, name: student.name, note: student.note };
+                            
+                            switch (student.status) {
+                                case '외박': students.absent.push(info); break;
+                                case '신규': students.new.push(info); break;
+                                case '퇴소': students.checkout.push(info); break;
+                                case '이동-': students.moveOut.push(info); break;
+                                case '이동+': students.moveIn.push(info); break;
+                                case '등미': students.late.push(info); break;
+                            }
+                        }
+                    }
+                }
+            } else {
+                // 1인실
+                for (let roomNum = floorInfo.start; roomNum <= floorInfo.end; roomNum++) {
+                    const roomCode = `${building}${roomNum}`;
+                    const student = googleSheetData.find(s => s.room === roomCode);
+                    
+                    if (student && student.name !== '미배정') {
+                        const info = { room: student.room, name: student.name, note: student.note };
+                        
+                        switch (student.status) {
+                            case '외박': students.absent.push(info); break;
+                            case '신규': students.new.push(info); break;
+                            case '퇴소': students.checkout.push(info); break;
+                            case '이동-': students.moveOut.push(info); break;
+                            case '이동+': students.moveIn.push(info); break;
+                            case '등미': students.late.push(info); break;
+                        }
+                    }
+                }
+            }
+            
+            return students;
+        }
+
+        // 잔디 웹훅 전송
+        async function sendToJandi(reportData) {
+            let message = `🏢 **기숙사 인원 보고**\n\n`;
+            message += `👤 **담당자**: ${reportData.manager}\n`;
+            message += `🏢 **위치**: ${reportData.building}동 ${reportData.floor}층\n`;
+            message += `📅 **보고시간**: ${new Date(reportData.timestamp).toLocaleString('ko-KR')}\n\n`;
+            message += `📊 **인원 현황**\n`;
+            message += `• 현재원: ${reportData.current}명\n`;
+            message += `• 외박: ${reportData.absent}명\n`;
+            message += `• 신규: ${reportData.new}명\n`;
+            message += `• 퇴소: ${reportData.checkout}명\n`;
+            message += `• 이동-: ${reportData.moveOut}명\n`;
+            message += `• 이동+: ${reportData.moveIn}명\n`;
+            message += `• 등미: ${reportData.late}명\n\n`;
+            
+            const statusNames = {
+                absent: '🛏️ 외박',
+                new: '✨ 신규',
+                checkout: '🚪 퇴소',
+                moveOut: '⬅️ 이동-',
+                moveIn: '➡️ 이동+',
+                late: '⏰ 등미'
+            };
+
+            Object.keys(reportData.students).forEach(status => {
+                const students = reportData.students[status];
+                if (students.length > 0) {
+                    message += `**${statusNames[status]} 학생 명단**\n`;
+                    students.forEach(student => {
+                        message += `• ${student.room} ${student.name}`;
+                        if (student.note) message += ` (${student.note})`;
+                        message += `\n`;
+                    });
+                    message += `\n`;
+                }
+            });
+            
+            const payload = {
+                body: message,
+                connectColor: '#667eea',
+                connectInfo: [{
+                    title: '📊 기숙사 관리 시스템',
+                    description: `${reportData.building}동 ${reportData.floor}층 인원 현황 보고`
+                }]
+            };
+            
+            const response = await fetch(JANDI_WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.tosslab.jandi-v2+json'
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+        }
+
+        // 모의 데이터 생성
+        function generateMockData() {
+            googleSheetData = [];
+            
+            const names = ['김민준', '이서준', '박도윤', '최예준', '정시우', '강주원', '조하준', '윤지호'];
+            const statuses = ['정상', '외박', '신규', '퇴소', '이동-', '이동+', '등미'];
+            
+            Object.keys(dormitoryStructure).forEach(building => {
+                Object.keys(dormitoryStructure[building]).forEach(floor => {
+                    const floorInfo = dormitoryStructure[building][floor];
+                    const is3PersonRoom = parseInt(floor) === 4;
+                    
+                    for (let roomNum = floorInfo.start; roomNum <= floorInfo.end; roomNum++) {
+                        const roomCode = `${building}${roomNum}`;
+                        
+                        if (is3PersonRoom) {
+                            for (let bedNum = 1; bedNum <= 3; bedNum++) {
+                                const hasStudent = Math.random() > 0.3;
+                                googleSheetData.push({
+                                    room: `${roomCode}-${bedNum}`,
+                                    originalRoom: roomCode,
+                                    bedNumber: bedNum,
+                                    name: hasStudent ? names[Math.floor(Math.random() * names.length)] : '미배정',
+                                    status: hasStudent ? statuses[Math.floor(Math.random() * statuses.length)] : '',
+                                    note: '',
+                                    gender: genderMapping[building],
+                                    is3PersonRoom: true
+                                });
+                            }
+                        } else {
+                            const hasStudent = Math.random() > 0.2;
+                            googleSheetData.push({
+                                room: roomCode,
+                                name: hasStudent ? names[Math.floor(Math.random() * names.length)] : '미배정',
+                                status: hasStudent ? statuses[Math.floor(Math.random() * statuses.length)] : '',
+                                note: '',
+                                gender: genderMapping[building],
+                                is3PersonRoom: false
+                            });
+                        }
+                    }
+                });
+            });
+        }
+
+        // UI 헬퍼 함수
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        function showModal(title, message) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // 이벤트 리스너
+        document.addEventListener('DOMContentLoaded', function() {
+            // 시계 시작
+            updateClock();
+            setInterval(updateClock, 1000); // 1초마다 업데이트
+            
+            // 페이지 로드 시 바로 데이터 로드
+            if (googleSheetData.length === 0) {
+                loadGoogleSheetData();
+            }
+
+            // 상태 카드 입력 이벤트
+            const inputs = document.querySelectorAll('.status-card input');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const countElement = this.parentElement.querySelector('.count');
+                    countElement.textContent = this.value || '0';
+                });
+            });
+
+            // 모달 외부 클릭 시 닫기
+            window.onclick = function(event) {
+                const modal = document.getElementById('modal');
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
