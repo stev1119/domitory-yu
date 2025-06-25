@@ -1210,57 +1210,6 @@
                 </div>
             </div>
 
-            <!-- Manual Entry Section -->
-            <div class="control-panel">
-                <h3 style="color: white; margin-bottom: 20px;"><i class="fas fa-edit"></i> 수동 입력</h3>
-                <div id="manual-entries">
-                    <div class="manual-entry-row">
-                        <div class="control-row">
-                            <div class="form-group">
-                                <label><i class="fas fa-door-open"></i> 기숙사 번호</label>
-                                <input type="text" class="manual-room" placeholder="예: A101, B203-2" />
-                            </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-user"></i> 학생 이름</label>
-                                <input type="text" class="manual-name" placeholder="학생 이름" />
-                            </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-list"></i> 상태</label>
-                                <select class="manual-status">
-                                    <option value="">상태 선택</option>
-                                    <option value="정상">정상</option>
-                                    <option value="외박">외박</option>
-                                    <option value="외출">외출</option>
-                                    <option value="퇴소">퇴소</option>
-                                    <option value="신규">신규</option>
-                                    <option value="이동-">이동-</option>
-                                    <option value="이동+">이동+</option>
-                                    <option value="등미">등미</option>
-                                    <option value="미배정">미배정</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-comment"></i> 비고</label>
-                                <input type="text" class="manual-note" placeholder="비고 사항" />
-                            </div>
-                            <div class="form-group" style="align-self: end;">
-                                <button class="btn btn-danger btn-small" onclick="removeManualEntry(this)" style="padding: 8px 12px; font-size: 0.9rem;">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div style="text-align: center; margin-top: 15px;">
-                    <button class="btn btn-primary" onclick="addManualEntry()">
-                        <i class="fas fa-plus"></i> 행 추가
-                    </button>
-                    <button class="btn btn-success" onclick="applyManualEntries()">
-                        <i class="fas fa-check"></i> 수동 입력 적용
-                    </button>
-                </div>
-            </div>
-
             <!-- Control Panel -->
             <div class="control-panel">
                 <div class="control-row">
@@ -1317,6 +1266,57 @@
                 <div class="checkbox-container">
                     <input type="checkbox" id="revision-checkbox">
                     <label for="revision-checkbox">수정보고 (기존 보고 덮어쓰기)</label>
+                </div>
+            </div>
+
+            <!-- Manual Entry Section -->
+            <div class="control-panel">
+                <h3 style="color: white; margin-bottom: 20px;"><i class="fas fa-edit"></i> 수동 입력</h3>
+                <div id="manual-entries">
+                    <div class="manual-entry-row">
+                        <div class="control-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-door-open"></i> 기숙사 번호</label>
+                                <input type="text" class="manual-room" placeholder="예: A101, B203-2" />
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> 학생 이름</label>
+                                <input type="text" class="manual-name" placeholder="학생 이름" />
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-list"></i> 상태</label>
+                                <select class="manual-status">
+                                    <option value="">상태 선택</option>
+                                    <option value="정상">정상</option>
+                                    <option value="외박">외박</option>
+                                    <option value="외출">외출</option>
+                                    <option value="퇴소">퇴소</option>
+                                    <option value="신규">신규</option>
+                                    <option value="이동-">이동-</option>
+                                    <option value="이동+">이동+</option>
+                                    <option value="등미">등미</option>
+                                    <option value="미배정">미배정</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-comment"></i> 비고</label>
+                                <input type="text" class="manual-note" placeholder="비고 사항" />
+                            </div>
+                            <div class="form-group" style="align-self: end;">
+                                <button class="btn btn-danger btn-small" onclick="removeManualEntry(this)" style="padding: 8px 12px; font-size: 0.9rem;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="addManualEntry()">
+                        <i class="fas fa-plus"></i> 행 추가
+                    </button>
+                    <button class="btn btn-success" onclick="applyManualEntries()">
+                        <i class="fas fa-check"></i> 수동 입력 적용
+                    </button>
                 </div>
             </div>
 
@@ -1491,6 +1491,7 @@
         let submittedReports = {};
         let persistentStatuses = JSON.parse(localStorage.getItem('persistentStatuses') || '{}');
         let currentUserType = '';
+        let manualEntries = []; // 수동 입력 데이터 저장
         
         // 초기화 시 submittedReports 구조 확인 및 수정
         function initializeReports() {
@@ -1801,8 +1802,8 @@
                                         parentPhone: studentRow[5] || '',
                                         studentPhone: studentRow[6] || '',
                                         librarySeats: studentRow[7] || '',
-                                        advisor: studentRow[8] || '',
-                                        group: studentRow[9] || '',
+                                        advisor: studentRow[8] || '',  // J열 - 담임
+                                        group: studentRow[9] || '',    // K열 - 그룹  
                                         birthDate: studentRow[10] || '',
                                         gender: genderMapping[building] || '',
                                         checkInDate: studentRow[12] || '',
@@ -1835,8 +1836,8 @@
                                 parentPhone: row[5] || '',
                                 studentPhone: row[6] || '',
                                 librarySeats: row[7] || '',
-                                advisor: row[8] || '',
-                                group: row[9] || '',
+                                advisor: row[8] || '',  // J열 - 담임
+                                group: row[9] || '',    // K열 - 그룹
                                 birthDate: row[10] || '',
                                 gender: genderMapping[building] || '',
                                 checkInDate: row[12] || '',
@@ -1998,7 +1999,7 @@
             });
         }
 
-        // 학생 데이터 로드 (업데이트된 집계 방식)
+        // 학생 데이터 로드 (수동 입력 적용 포함)
         function loadStudentData() {
             const building = document.getElementById('building-select').value;
             const floor = document.getElementById('floor-select').value;
@@ -2022,6 +2023,9 @@
             
             const is3PersonRoom = parseInt(floor) === 4;
             
+            // 수동 입력된 학생 데이터도 카운트에 포함
+            const allStudentData = [...googleSheetData, ...manualEntries];
+            
             if (is3PersonRoom) {
                 // 3인실 처리
                 for (let roomNum = floorInfo.start; roomNum <= floorInfo.end; roomNum++) {
@@ -2029,7 +2033,7 @@
                     
                     for (let bedNum = 1; bedNum <= 3; bedNum++) {
                         const roomDisplay = roomCode + (bedNum > 1 ? `-${bedNum}` : '');
-                        const studentData = googleSheetData.find(student => student.room === roomDisplay);
+                        const studentData = allStudentData.find(student => student.room === roomDisplay);
                         
                         if (studentData) {
                             const studentItem = document.createElement('div');
@@ -2055,22 +2059,22 @@
                             `;
                             studentGrid.appendChild(studentItem);
                             
-                            // 새로운 집계 방식
+                            // 카운트 계산 (수동 입력 포함)
                             if (studentData.name !== '미배정' && studentData.status !== '미배정') {
                                 switch (studentData.status) {
                                     case '외박': absentCount++; break;
                                     case '퇴소': checkoutCount++; break;
                                     case '신규': 
                                         newCount++; 
-                                        currentCount++; // 신규는 현재원에 포함
+                                        currentCount++; 
                                         break;
                                     case '이동-': moveOutCount++; break;
                                     case '이동+': 
                                         moveInCount++; 
-                                        currentCount++; // 이동+는 현재원에 포함
+                                        currentCount++; 
                                         break;
                                     case '등미': lateCount++; break;
-                                    default: // '정상' 또는 빈 값
+                                    default: 
                                         currentCount++; 
                                         break;
                                 }
@@ -2082,7 +2086,7 @@
                 // 1인실 처리
                 for (let roomNum = floorInfo.start; roomNum <= floorInfo.end; roomNum++) {
                     const roomCode = `${building}${roomNum}`;
-                    const studentData = googleSheetData.find(student => student.room === roomCode);
+                    const studentData = allStudentData.find(student => student.room === roomCode);
                     
                     if (studentData) {
                         const studentItem = document.createElement('div');
@@ -2108,22 +2112,22 @@
                         `;
                         studentGrid.appendChild(studentItem);
                         
-                        // 새로운 집계 방식
+                        // 카운트 계산 (수동 입력 포함)
                         if (studentData.name !== '미배정' && studentData.status !== '미배정') {
                             switch (studentData.status) {
                                 case '외박': absentCount++; break;
                                 case '퇴소': checkoutCount++; break;
                                 case '신규': 
                                     newCount++; 
-                                    currentCount++; // 신규는 현재원에 포함
+                                    currentCount++; 
                                     break;
                                 case '이동-': moveOutCount++; break;
                                 case '이동+': 
                                     moveInCount++; 
-                                    currentCount++; // 이동+는 현재원에 포함
+                                    currentCount++; 
                                     break;
                                 case '등미': lateCount++; break;
-                                default: // '정상' 또는 빈 값
+                                default: 
                                     currentCount++; 
                                     break;
                             }
@@ -2157,61 +2161,7 @@
             document.getElementById('late-input').value = late;
         }
 
-        // 상태별 학생 표시 함수 (새로 추가)
-        function showStatusStudents(statusType) {
-            console.log(`📋 ${statusType} 상태 학생 검색 중...`);
-            
-            // 현재 제출된 보고서에서 해당 상태 학생들 찾기
-            const today = new Date().toDateString();
-            const allReports = JSON.parse(localStorage.getItem('submittedReports') || '{}');
-            
-            // 오늘 데이터가 없으면 최근 데이터 사용
-            let useReports = allReports[today] || {};
-            let useDate = today;
-            
-            if (Object.keys(useReports).length === 0) {
-                const allDates = Object.keys(allReports).sort((a, b) => new Date(b) - new Date(a));
-                if (allDates.length > 0) {
-                    useDate = allDates[0];
-                    useReports = allReports[useDate] || {};
-                }
-            }
-            
-            console.log(`📅 ${useDate} 데이터 사용:`, Object.keys(useReports).length, '개 보고서');
-            
-            // 해당 상태의 학생들 수집
-            const statusStudents = [];
-            
-            Object.values(useReports).forEach(report => {
-                if (report.students && report.students[statusType]) {
-                    statusStudents.push(...report.students[statusType]);
-                }
-            });
-            
-            console.log(`🔍 ${statusType} 상태 학생:`, statusStudents.length, '명');
-            
-            // 상태명 매핑
-            const statusNames = {
-                current: '현재원',
-                absent: '외박',
-                new: '신규',
-                checkout: '퇴소',
-                moveOut: '이동-',
-                moveIn: '이동+',
-                late: '등미'
-            };
-            
-            if (statusStudents.length > 0) {
-                displayStudentCards(statusStudents, `${statusNames[statusType]} 학생 목록 (${statusStudents.length}명)`);
-                document.getElementById('student-detail-cards').scrollIntoView({ 
-                    behavior: 'smooth' 
-                });
-            } else {
-                showMessage(`${statusNames[statusType]} 상태의 학생이 없습니다.`, 'warning');
-            }
-        }
-
-        // 수동 입력 관련 함수들 (새로 추가)
+        // 수동 입력 관련 함수들
         function addManualEntry() {
             const container = document.getElementById('manual-entries');
             const newRow = document.createElement('div');
@@ -2270,6 +2220,7 @@
         function applyManualEntries() {
             const rows = document.querySelectorAll('.manual-entry-row');
             let appliedCount = 0;
+            manualEntries = []; // 수동 입력 데이터 초기화
             
             rows.forEach(row => {
                 const room = row.querySelector('.manual-room').value.trim();
@@ -2296,7 +2247,7 @@
                         
                         appliedCount++;
                     } else if (room && name) {
-                        // 새 학생 추가 (기본 정보로)
+                        // 새 학생 추가 (수동 입력 배열에)
                         const building = room.charAt(0).toUpperCase();
                         const newStudent = {
                             room: room,
@@ -2315,10 +2266,11 @@
                             checkInDate: '',
                             school: '',
                             class: '',
-                            is3PersonRoom: room.includes('-')
+                            is3PersonRoom: room.includes('-'),
+                            isManualEntry: true // 수동 입력 표시
                         };
                         
-                        googleSheetData.push(newStudent);
+                        manualEntries.push(newStudent);
                         
                         // 지속적 상태 저장
                         const persistentKey = `${room}_${name}`;
@@ -2355,9 +2307,9 @@
         }
 
         // 학생 상태 업데이트 (지속적 상태 저장 포함)
-        // 학생 상태 업데이트 (수정된 버전)
         function updateStudentStatus(roomCode, status) {
-            const student = googleSheetData.find(s => s.room === roomCode);
+            const student = googleSheetData.find(s => s.room === roomCode) || 
+                           manualEntries.find(s => s.room === roomCode);
             if (student) {
                 // 이전 상태 확인
                 const oldStatus = student.status;
@@ -2374,7 +2326,7 @@
                 
                 loadStudentData(); // 카운트 재계산
                 
-                // 상태 변경 로그 (외박만 제대로 표시되는 문제 해결)
+                // 상태 변경 로그
                 if (status && status !== oldStatus) {
                     console.log(`${roomCode} 학생 상태 변경: ${oldStatus || '정상'} → ${status}`);
                 }
@@ -2383,14 +2335,15 @@
 
         // 학생 비고 업데이트
         function updateStudentNote(roomCode, note) {
-            const student = googleSheetData.find(s => s.room === roomCode);
+            const student = googleSheetData.find(s => s.room === roomCode) || 
+                           manualEntries.find(s => s.room === roomCode);
             if (student) {
                 student.note = note;
                 console.log(`${roomCode} 학생 비고 업데이트: ${note}`);
             }
         }
 
-        // 잔디 웹훅 전송
+        // 잔디 웹훅 전송 (수동 입력 포함)
         async function sendToJandi(reportData) {
             try {
                 const isRevision = reportData.isRevision ? '🔄 **[수정보고]** ' : '';
@@ -2407,7 +2360,7 @@
                 message += `• 이동+: ${reportData.moveIn}명\n`;
                 message += `• 등미: ${reportData.late}명\n\n`;
                 
-                // 상세 학생 정보 추가
+                // 상세 학생 정보 추가 (수동 입력 포함)
                 const statusNames = {
                     absent: '🛏️ 외박',
                     new: '✨ 신규',
@@ -2424,6 +2377,7 @@
                         students.forEach(student => {
                             message += `• ${student.room} ${student.name}`;
                             if (student.note) message += ` (${student.note})`;
+                            if (student.isManualEntry) message += ` [수동입력]`;
                             message += `\n`;
                         });
                         message += `\n`;
@@ -2485,7 +2439,7 @@
             showLoading();
             
             try {
-                // 보고 데이터 수집
+                // 보고 데이터 수집 (수동 입력 포함)
                 const reportData = {
                     manager: manager,
                     building: building,
@@ -2522,7 +2476,7 @@
             }
         }
 
-        // 학생 상세 정보 수집
+        // 학생 상세 정보 수집 (수동 입력 포함)
         function getStudentDetails(building, floor) {
             const students = {
                 absent: [],
@@ -2535,6 +2489,7 @@
             
             const floorInfo = dormitoryStructure[building][floor];
             const is3PersonRoom = parseInt(floor) === 4;
+            const allStudentData = [...googleSheetData, ...manualEntries];
             
             if (is3PersonRoom) {
                 // 3인실 처리
@@ -2543,13 +2498,14 @@
                     
                     for (let bedNum = 1; bedNum <= 3; bedNum++) {
                         const roomDisplay = roomCode + (bedNum > 1 ? `-${bedNum}` : '');
-                        const student = googleSheetData.find(s => s.room === roomDisplay);
+                        const student = allStudentData.find(s => s.room === roomDisplay);
                         
                         if (student && student.name !== '미배정' && student.status !== '미배정') {
                             const studentInfo = {
                                 room: student.room,
                                 name: student.name,
-                                note: student.note
+                                note: student.note,
+                                isManualEntry: student.isManualEntry || false
                             };
                             
                             switch (student.status) {
@@ -2567,13 +2523,14 @@
                 // 1인실 처리
                 for (let roomNum = floorInfo.start; roomNum <= floorInfo.end; roomNum++) {
                     const roomCode = `${building}${roomNum}`;
-                    const student = googleSheetData.find(s => s.room === roomCode);
+                    const student = allStudentData.find(s => s.room === roomCode);
                     
                     if (student && student.name !== '미배정' && student.status !== '미배정') {
                         const studentInfo = {
                             room: student.room,
                             name: student.name,
-                            note: student.note
+                            note: student.note,
+                            isManualEntry: student.isManualEntry || false
                         };
                         
                         switch (student.status) {
@@ -2589,6 +2546,60 @@
             }
             
             return students;
+        }
+
+        // 상태별 학생 표시 함수
+        function showStatusStudents(statusType) {
+            console.log(`📋 ${statusType} 상태 학생 검색 중...`);
+            
+            // 현재 제출된 보고서에서 해당 상태 학생들 찾기
+            const today = new Date().toDateString();
+            const allReports = JSON.parse(localStorage.getItem('submittedReports') || '{}');
+            
+            // 오늘 데이터가 없으면 최근 데이터 사용
+            let useReports = allReports[today] || {};
+            let useDate = today;
+            
+            if (Object.keys(useReports).length === 0) {
+                const allDates = Object.keys(allReports).sort((a, b) => new Date(b) - new Date(a));
+                if (allDates.length > 0) {
+                    useDate = allDates[0];
+                    useReports = allReports[useDate] || {};
+                }
+            }
+            
+            console.log(`📅 ${useDate} 데이터 사용:`, Object.keys(useReports).length, '개 보고서');
+            
+            // 해당 상태의 학생들 수집
+            const statusStudents = [];
+            
+            Object.values(useReports).forEach(report => {
+                if (report.students && report.students[statusType]) {
+                    statusStudents.push(...report.students[statusType]);
+                }
+            });
+            
+            console.log(`🔍 ${statusType} 상태 학생:`, statusStudents.length, '명');
+            
+            // 상태명 매핑
+            const statusNames = {
+                current: '현재원',
+                absent: '외박',
+                new: '신규',
+                checkout: '퇴소',
+                moveOut: '이동-',
+                moveIn: '이동+',
+                late: '등미'
+            };
+            
+            if (statusStudents.length > 0) {
+                displayStudentCards(statusStudents, `${statusNames[statusType]} 학생 목록 (${statusStudents.length}명)`);
+                document.getElementById('student-detail-cards').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+            } else {
+                showMessage(`${statusNames[statusType]} 상태의 학생이 없습니다.`, 'warning');
+            }
         }
 
         // 집계 데이터 로드 (원본 코드 기반으로 복원)
@@ -2748,29 +2759,6 @@
                 showMessage('집계할 보고서 데이터가 없습니다', 'error');
             }
         }
-        
-        // UI 업데이트 전용 함수
-        function updateSummaryUI(totalCounts, maleCounts, femaleCounts) {
-            // 전체 현황 업데이트
-            document.getElementById('total-current').textContent = totalCounts.current;
-            document.getElementById('total-absent').textContent = totalCounts.absent;
-            document.getElementById('total-new').textContent = totalCounts.new;
-            document.getElementById('total-checkout').textContent = totalCounts.checkout;
-            document.getElementById('total-move-out').textContent = totalCounts.moveOut;
-            document.getElementById('total-move-in').textContent = totalCounts.moveIn;
-            document.getElementById('total-late').textContent = totalCounts.late;
-            
-            // 성별 현황 업데이트
-            document.getElementById('male-current').textContent = maleCounts.current;
-            document.getElementById('male-absent').textContent = maleCounts.absent;
-            document.getElementById('male-new').textContent = maleCounts.new;
-            document.getElementById('male-checkout').textContent = maleCounts.checkout;
-            
-            document.getElementById('female-current').textContent = femaleCounts.current;
-            document.getElementById('female-absent').textContent = femaleCounts.absent;
-            document.getElementById('female-new').textContent = femaleCounts.new;
-            document.getElementById('female-checkout').textContent = femaleCounts.checkout;
-        }
 
         // 동별/층별 보고 현황 표시
         function displayBuildingReports(reports) {
@@ -2849,24 +2837,27 @@
             displayStudentCards(students, `${report.building}동 ${report.floor}층 상세 정보`);
         }
 
-        // 학생 카드 표시
+        // 학생 카드 표시 (상태 정보 수정)
         function displayStudentCards(students, title) {
             const container = document.getElementById('student-detail-cards');
             container.innerHTML = `<h2 style="color: white; margin-bottom: 20px; text-align: center;">${title}</h2>`;
             
             students.forEach(student => {
-                const fullStudentData = googleSheetData.find(s => s.room === student.room);
+                const fullStudentData = googleSheetData.find(s => s.room === student.room) || 
+                                       manualEntries.find(s => s.room === student.room);
                 if (fullStudentData) {
                     const card = document.createElement('div');
                     card.className = 'student-detail-card';
                     
-                    const statusColor = getStatusColor(fullStudentData.status);
+                    // 학생의 실제 상태 가져오기
+                    const actualStatus = fullStudentData.status || '정상';
+                    const statusColor = getStatusColor(actualStatus);
                     
                     card.innerHTML = `
                         <div class="card-header">
                             <h4>${fullStudentData.name}</h4>
                             <div class="status-badge" style="background: ${statusColor};">
-                                ${fullStudentData.status || '정상'}
+                                ${actualStatus}
                             </div>
                         </div>
                         <div class="card-body">
@@ -2876,7 +2867,7 @@
                             </div>
                             <div class="info-row">
                                 <span class="info-label">상태</span>
-                                <span class="info-value">${fullStudentData.status || '정상'}</span>
+                                <span class="info-value">${actualStatus}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">비고</span>
@@ -2946,7 +2937,8 @@
                 return;
             }
             
-            const results = googleSheetData.filter(student => {
+            const allStudentData = [...googleSheetData, ...manualEntries];
+            const results = allStudentData.filter(student => {
                 const searchFields = [
                     student.name,
                     student.room,
@@ -3031,7 +3023,7 @@
                             ` : ''}
                             ${student.advisor ? `
                                 <div class="quick-result-detail">
-                                    <strong>담임:</strong> ${student.advisor}
+                                    <strong>생활담임:</strong> ${student.advisor}
                                 </div>
                             ` : ''}
                             ${student.class ? `
@@ -3076,7 +3068,8 @@
                 return;
             }
             
-            const results = googleSheetData.filter(student => {
+            const allStudentData = [...googleSheetData, ...manualEntries];
+            const results = allStudentData.filter(student => {
                 const searchFields = [
                     student.name,
                     student.room,
@@ -3111,7 +3104,8 @@
         
         // 개별 학생 상세 정보 표시
         function showStudentDetail(roomCode) {
-            const student = googleSheetData.find(s => s.room === roomCode);
+            const allStudentData = [...googleSheetData, ...manualEntries];
+            const student = allStudentData.find(s => s.room === roomCode);
             if (student) {
                 displayStudentCards([student], `${student.name} 상세 정보`);
                 document.getElementById('student-detail-cards').scrollIntoView({ 
@@ -3140,111 +3134,6 @@
                 '미배정': '#666666'
             };
             return colors[status] || '#4facfe';
-        }
-
-        // 통계 정보 계산
-        function calculateStatistics() {
-            const stats = {
-                totalRooms: 0,
-                occupiedRooms: 0,
-                emptyRooms: 0,
-                occupancyRate: 0,
-                byBuilding: {},
-                byStatus: {
-                    '정상': 0,
-                    '외박': 0,
-                    '신규': 0,
-                    '퇴소': 0,
-                    '이동-': 0,
-                    '이동+': 0,
-                    '등미': 0,
-                    '미배정': 0
-                }
-            };
-            
-            Object.keys(dormitoryStructure).forEach(building => {
-                stats.byBuilding[building] = {
-                    total: 0,
-                    occupied: 0,
-                    empty: 0,
-                    occupancyRate: 0
-                };
-                
-                Object.keys(dormitoryStructure[building]).forEach(floor => {
-                    const floorInfo = dormitoryStructure[building][floor];
-                    let roomCount = floorInfo.end - floorInfo.start + 1;
-                    
-                    // 3인실의 경우 침대 수로 계산
-                    if (parseInt(floor) === 4) {
-                        roomCount = roomCount * 3; // 3인실이므로 3배
-                    }
-                    
-                    stats.totalRooms += roomCount;
-                    stats.byBuilding[building].total += roomCount;
-                });
-            });
-            
-            googleSheetData.forEach(student => {
-                const building = student.room.charAt(0).toUpperCase();
-                
-                if (student.name !== '미배정' && student.status !== '미배정') {
-                    stats.occupiedRooms++;
-                    if (stats.byBuilding[building]) {
-                        stats.byBuilding[building].occupied++;
-                    }
-                    
-                    const status = student.status || '정상';
-                    if (stats.byStatus[status] !== undefined) {
-                        stats.byStatus[status]++;
-                    }
-                } else {
-                    stats.emptyRooms++;
-                    if (stats.byBuilding[building]) {
-                        stats.byBuilding[building].empty++;
-                    }
-                    
-                    if (student.status === '미배정' || student.name === '미배정') {
-                        stats.byStatus['미배정']++;
-                    }
-                }
-            });
-            
-            stats.occupancyRate = ((stats.occupiedRooms / stats.totalRooms) * 100).toFixed(1);
-            
-            Object.keys(stats.byBuilding).forEach(building => {
-                const buildingStats = stats.byBuilding[building];
-                buildingStats.occupancyRate = ((buildingStats.occupied / buildingStats.total) * 100).toFixed(1);
-            });
-            
-            return stats;
-        }
-
-        // 통계 표시 함수
-        function showStatistics() {
-            const stats = calculateStatistics();
-            
-            let message = '📊 **기숙사 통계 현황**\n\n';
-            message += `🏠 **전체 현황**\n`;
-            message += `• 전체 호실: ${stats.totalRooms}개\n`;
-            message += `• 입실: ${stats.occupiedRooms}개\n`;
-            message += `• 공실: ${stats.emptyRooms}개\n`;
-            message += `• 입실률: ${stats.occupancyRate}%\n\n`;
-            
-            message += `🏢 **동별 현황**\n`;
-            Object.keys(stats.byBuilding).forEach(building => {
-                const buildingStats = stats.byBuilding[building];
-                const genderStr = genderMapping[building] === 'male' ? '남학생' : '여학생';
-                message += `• ${building}동 (${genderStr}): ${buildingStats.occupied}/${buildingStats.total}개 (${buildingStats.occupancyRate}%)\n`;
-            });
-            
-            message += `\n📋 **상태별 현황**\n`;
-            Object.keys(stats.byStatus).forEach(status => {
-                if (stats.byStatus[status] > 0) {
-                    message += `• ${status}: ${stats.byStatus[status]}명\n`;
-                }
-            });
-            
-            showModal('기숙사 통계', message);
         }
 
         // 연결 상태 확인
@@ -3305,65 +3194,6 @@
             }
             
             showModal('연결 상태', message);
-        }
-
-        // 데이터 백업 및 복원
-        function exportData() {
-            const exportData = {
-                reports: submittedReports,
-                persistentStatuses: persistentStatuses,
-                timestamp: new Date().toISOString(),
-                version: '2.0'
-            };
-            
-            const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-                type: 'application/json'
-            });
-            
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `dormitory-reports-${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showMessage('데이터가 성공적으로 내보내졌습니다.', 'success');
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    if (importedData.reports) {
-                        submittedReports = { ...submittedReports, ...importedData.reports };
-                        localStorage.setItem('submittedReports', JSON.stringify(submittedReports));
-                        
-                        if (importedData.persistentStatuses) {
-                            persistentStatuses = { ...persistentStatuses, ...importedData.persistentStatuses };
-                            localStorage.setItem('persistentStatuses', JSON.stringify(persistentStatuses));
-                        }
-                        
-                        showMessage('데이터가 성공적으로 가져와졌습니다.', 'success');
-                        
-                        // 집계 탭이 활성화되어 있으면 데이터 새로고침
-                        if (document.getElementById('summary-tab').classList.contains('active')) {
-                            loadSummaryData();
-                        }
-                    } else {
-                        throw new Error('올바르지 않은 데이터 형식입니다.');
-                    }
-                } catch (error) {
-                    console.error('데이터 가져오기 오류:', error);
-                    showMessage('데이터 가져오기 중 오류가 발생했습니다.', 'error');
-                }
-            };
-            reader.readAsText(file);
         }
 
         // 일일 리셋 체크 (외박, 등미 상태 유지)
