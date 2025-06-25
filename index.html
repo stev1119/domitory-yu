@@ -1414,9 +1414,56 @@
         // 전역 변수
         let googleSheetData = [];
         let currentReports = {};
-        let submittedReports = JSON.parse(localStorage.getItem('submittedReports') || '{}');
+        let submittedReports = {};
         let persistentStatuses = JSON.parse(localStorage.getItem('persistentStatuses') || '{}');
         let currentUserType = '';
+        
+        // 초기화 시 submittedReports 구조 확인 및 수정
+        function initializeReports() {
+            const storedReports = localStorage.getItem('submittedReports');
+            if (storedReports) {
+                try {
+                    const parsed = JSON.parse(storedReports);
+                    console.log('💾 로컬 스토리지에서 로드된 데이터:', parsed);
+                    console.log('💾 데이터 타입:', typeof parsed, '배열 여부:', Array.isArray(parsed));
+                    
+                    if (Array.isArray(parsed)) {
+                        console.log('🔄 배열 데이터를 객체로 변환 중...');
+                        submittedReports = {};
+                        
+                        parsed.forEach((item, index) => {
+                            console.log(`📝 항목 ${index}:`, item);
+                            if (typeof item === 'string') {
+                                // 문자열 키만 있는 경우 - 실제 보고서 데이터가 아님
+                                console.log(`⚠️ 문자열 키 발견: ${item}`);
+                            } else if (item && typeof item === 'object' && item.timestamp) {
+                                // 실제 보고서 객체
+                                const reportDate = new Date(item.timestamp).toDateString();
+                                const key = `${item.building}${item.floor}`;
+                                
+                                if (!submittedReports[reportDate]) {
+                                    submittedReports[reportDate] = {};
+                                }
+                                submittedReports[reportDate][key] = item;
+                                console.log(`✅ 변환됨: ${reportDate} -> ${key}`, item);
+                            }
+                        });
+                        
+                        console.log('✅ 변환 완료된 보고서 구조:', submittedReports);
+                        localStorage.setItem('submittedReports', JSON.stringify(submittedReports));
+                    } else if (typeof parsed === 'object') {
+                        submittedReports = parsed;
+                        console.log('✅ 객체 형태 데이터 사용:', submittedReports);
+                    }
+                } catch (error) {
+                    console.error('❌ 데이터 파싱 오류:', error);
+                    submittedReports = {};
+                }
+            } else {
+                console.log('📝 로컬 스토리지에 데이터 없음');
+                submittedReports = {};
+            }
+        }
         
         // API 설정
         const GOOGLE_API_KEY = 'AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY';
@@ -1571,6 +1618,7 @@
 
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
+            initializeReports(); // 보고서 데이터 구조 초기화
             initializeThreePersonRooms();
             updateDailyReset();
             setInterval(updateDailyReset, 60000); // 1분마다 체크
@@ -2259,40 +2307,42 @@
             return students;
         }
 
-        // 집계 데이터 로드 (업데이트된 집계 방식)
+        // 집계 데이터 로드 (완전히 새로 작성)
         function loadSummaryData() {
             console.log('📊 집계 데이터 로드 시작...');
-            const today = new Date().toDateString();
             
-            // submittedReports 구조 확인 및 수정
-            console.log('📋 전체 보고서 데이터 타입:', typeof submittedReports);
-            console.log('📋 전체 보고서 데이터:', submittedReports);
+            // 데이터 구조 재확인
+            console.log('🔍 submittedReports 타입:', typeof submittedReports);
+            console.log('🔍 submittedReports 배열 여부:', Array.isArray(submittedReports));
+            console.log('🔍 submittedReports 내용:', submittedReports);
             
-            // 배열로 저장되어 있다면 객체로 변환
-            if (Array.isArray(submittedReports)) {
-                console.log('⚠️ 보고서 데이터가 배열 형태입니다. 객체로 변환 중...');
-                const newReports = {};
-                submittedReports.forEach((report, index) => {
-                    if (report && typeof report === 'object') {
-                        // 임시로 오늘 날짜로 저장 (실제로는 보고서의 timestamp를 사용해야 함)
-                        const reportDate = report.timestamp ? new Date(report.timestamp).toDateString() : today;
-                        if (!newReports[reportDate]) {
-                            newReports[reportDate] = {};
-                        }
-                        const key = `${report.building}${report.floor}`;
-                        newReports[reportDate][key] = report;
-                    }
-                });
-                submittedReports = newReports;
-                localStorage.setItem('submittedReports', JSON.stringify(submittedReports));
-                console.log('✅ 보고서 데이터 구조 변환 완료:', submittedReports);
+            // 강제로 데이터 구조 수정
+            if (Array.isArray(submittedReports) || typeof submittedReports !== 'object') {
+                console.log('🔄 데이터 구조 강제 수정...');
+                initializeReports();
             }
             
-            const todayReports = submittedReports[today] || {};
-            
+            const today = new Date().toDateString();
             console.log('📅 오늘 날짜:', today);
-            console.log('📝 오늘 제출된 보고서:', Object.keys(todayReports).length, '건');
-            console.log('📋 오늘 보고서 상세:', todayReports);
+            
+            // 모든 날짜의 데이터 확인
+            const allDates = Object.keys(submittedReports);
+            console.log('📅 사용 가능한 모든 날짜:', allDates);
+            
+            let selectedDate = today;
+            let selectedReports = submittedReports[today] || {};
+            
+            // 오늘 데이터가 없으면 가장 최근 데이터 사용
+            if (Object.keys(selectedReports).length === 0 && allDates.length > 0) {
+                // 날짜를 최신순으로 정렬
+                const sortedDates = allDates.sort((a, b) => new Date(b) - new Date(a));
+                selectedDate = sortedDates[0];
+                selectedReports = submittedReports[selectedDate] || {};
+                console.log(`📅 오늘 데이터 없음. 최근 데이터 사용: ${selectedDate}`);
+                console.log('📝 선택된 보고서:', selectedReports);
+            }
+            
+            console.log(`📝 집계 대상 보고서 (${selectedDate}):`, Object.keys(selectedReports).length, '건');
             
             let totalCounts = {
                 current: 0, absent: 0, new: 0, checkout: 0,
@@ -2310,94 +2360,82 @@
             };
             
             // 보고서별 집계
-            Object.entries(todayReports).forEach(([key, report]) => {
-                console.log(`📊 ${key} 보고서 집계:`, report);
+            Object.entries(selectedReports).forEach(([key, report]) => {
+                console.log(`📊 보고서 ${key} 집계:`, {
+                    building: report.building,
+                    floor: report.floor,
+                    current: report.current,
+                    absent: report.absent,
+                    new: report.new,
+                    checkout: report.checkout,
+                    moveOut: report.moveOut,
+                    moveIn: report.moveIn,
+                    late: report.late
+                });
                 
-                totalCounts.current += report.current || 0;
-                totalCounts.absent += report.absent || 0;
-                totalCounts.new += report.new || 0;
-                totalCounts.checkout += report.checkout || 0;
-                totalCounts.moveOut += report.moveOut || 0;
-                totalCounts.moveIn += report.moveIn || 0;
-                totalCounts.late += report.late || 0;
+                // 안전한 숫자 변환
+                const current = parseInt(report.current) || 0;
+                const absent = parseInt(report.absent) || 0;
+                const newCount = parseInt(report.new) || 0;
+                const checkout = parseInt(report.checkout) || 0;
+                const moveOut = parseInt(report.moveOut) || 0;
+                const moveIn = parseInt(report.moveIn) || 0;
+                const late = parseInt(report.late) || 0;
+                
+                totalCounts.current += current;
+                totalCounts.absent += absent;
+                totalCounts.new += newCount;
+                totalCounts.checkout += checkout;
+                totalCounts.moveOut += moveOut;
+                totalCounts.moveIn += moveIn;
+                totalCounts.late += late;
                 
                 const gender = genderMapping[report.building];
-                console.log(`🏢 ${report.building}동 성별:`, gender);
+                console.log(`🏢 ${report.building}동 -> 성별: ${gender}`);
                 
                 if (gender === 'male') {
-                    maleCounts.current += report.current || 0;
-                    maleCounts.absent += report.absent || 0;
-                    maleCounts.new += report.new || 0;
-                    maleCounts.checkout += report.checkout || 0;
-                    maleCounts.moveOut += report.moveOut || 0;
-                    maleCounts.moveIn += report.moveIn || 0;
-                    maleCounts.late += report.late || 0;
+                    maleCounts.current += current;
+                    maleCounts.absent += absent;
+                    maleCounts.new += newCount;
+                    maleCounts.checkout += checkout;
+                    maleCounts.moveOut += moveOut;
+                    maleCounts.moveIn += moveIn;
+                    maleCounts.late += late;
                 } else if (gender === 'female') {
-                    femaleCounts.current += report.current || 0;
-                    femaleCounts.absent += report.absent || 0;
-                    femaleCounts.new += report.new || 0;
-                    femaleCounts.checkout += report.checkout || 0;
-                    femaleCounts.moveOut += report.moveOut || 0;
-                    femaleCounts.moveIn += report.moveIn || 0;
-                    femaleCounts.late += report.late || 0;
+                    femaleCounts.current += current;
+                    femaleCounts.absent += absent;
+                    femaleCounts.new += newCount;
+                    femaleCounts.checkout += checkout;
+                    femaleCounts.moveOut += moveOut;
+                    femaleCounts.moveIn += moveIn;
+                    femaleCounts.late += late;
                 }
             });
             
-            // 오늘 데이터가 없다면 최근 데이터 사용
-            if (Object.keys(todayReports).length === 0) {
-                console.log('⚠️ 오늘 데이터가 없습니다. 최근 데이터를 찾는 중...');
-                const allDates = Object.keys(submittedReports).sort().reverse();
-                console.log('📅 사용 가능한 날짜들:', allDates);
-                
-                if (allDates.length > 0) {
-                    const latestDate = allDates[0];
-                    const latestReports = submittedReports[latestDate] || {};
-                    console.log(`📅 최근 데이터 (${latestDate}) 사용:`, latestReports);
-                    
-                    Object.entries(latestReports).forEach(([key, report]) => {
-                        console.log(`📊 ${key} 최근 보고서 집계:`, report);
-                        
-                        totalCounts.current += report.current || 0;
-                        totalCounts.absent += report.absent || 0;
-                        totalCounts.new += report.new || 0;
-                        totalCounts.checkout += report.checkout || 0;
-                        totalCounts.moveOut += report.moveOut || 0;
-                        totalCounts.moveIn += report.moveIn || 0;
-                        totalCounts.late += report.late || 0;
-                        
-                        const gender = genderMapping[report.building];
-                        if (gender === 'male') {
-                            maleCounts.current += report.current || 0;
-                            maleCounts.absent += report.absent || 0;
-                            maleCounts.new += report.new || 0;
-                            maleCounts.checkout += report.checkout || 0;
-                            maleCounts.moveOut += report.moveOut || 0;
-                            maleCounts.moveIn += report.moveIn || 0;
-                            maleCounts.late += report.late || 0;
-                        } else if (gender === 'female') {
-                            femaleCounts.current += report.current || 0;
-                            femaleCounts.absent += report.absent || 0;
-                            femaleCounts.new += report.new || 0;
-                            femaleCounts.checkout += report.checkout || 0;
-                            femaleCounts.moveOut += report.moveOut || 0;
-                            femaleCounts.moveIn += report.moveIn || 0;
-                            femaleCounts.late += report.late || 0;
-                        }
-                    });
-                    
-                    // 최근 데이터로 동별/층별 보고 현황 표시
-                    displayBuildingReports(latestReports);
-                    showMessage(`최근 데이터 (${latestDate})로 집계했습니다`, 'warning');
-                }
+            console.log('📊 최종 집계 결과:');
+            console.log('  📈 전체:', totalCounts);
+            console.log('  👨 남학생:', maleCounts);
+            console.log('  👩 여학생:', femaleCounts);
+            
+            // UI 업데이트
+            updateSummaryUI(totalCounts, maleCounts, femaleCounts);
+            
+            // 동별/층별 보고 현황 표시
+            displayBuildingReports(selectedReports);
+            
+            // 결과 메시지
+            if (Object.keys(selectedReports).length > 0) {
+                const message = selectedDate === today ? 
+                    `오늘 ${Object.keys(selectedReports).length}개 보고서 집계 완료` :
+                    `최근 데이터 (${selectedDate}) ${Object.keys(selectedReports).length}개 보고서로 집계`;
+                showMessage(message, selectedDate === today ? 'success' : 'warning');
             } else {
-                displayBuildingReports(todayReports);
-                showMessage(`${Object.keys(todayReports).length}개 보고서 집계 완료`, 'success');
+                showMessage('집계할 보고서 데이터가 없습니다', 'error');
             }
-            
-            console.log('📊 총 집계 결과:', totalCounts);
-            console.log('👨 남학생 집계:', maleCounts);
-            console.log('👩 여학생 집계:', femaleCounts);
-            
+        }
+        
+        // UI 업데이트 전용 함수
+        function updateSummaryUI(totalCounts, maleCounts, femaleCounts) {
             // 전체 현황 업데이트
             document.getElementById('total-current').textContent = totalCounts.current;
             document.getElementById('total-absent').textContent = totalCounts.absent;
