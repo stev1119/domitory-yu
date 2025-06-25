@@ -1012,6 +1012,29 @@
             }
         }
 
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+
+        /* Manual Entry Styles */
+        .manual-entry-row {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .manual-entry-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .manual-entry-row .control-row {
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            align-items: end;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .app-container {
@@ -1187,6 +1210,57 @@
                 </div>
             </div>
 
+            <!-- Manual Entry Section -->
+            <div class="control-panel">
+                <h3 style="color: white; margin-bottom: 20px;"><i class="fas fa-edit"></i> 수동 입력</h3>
+                <div id="manual-entries">
+                    <div class="manual-entry-row">
+                        <div class="control-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-door-open"></i> 기숙사 번호</label>
+                                <input type="text" class="manual-room" placeholder="예: A101, B203-2" />
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> 학생 이름</label>
+                                <input type="text" class="manual-name" placeholder="학생 이름" />
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-list"></i> 상태</label>
+                                <select class="manual-status">
+                                    <option value="">상태 선택</option>
+                                    <option value="정상">정상</option>
+                                    <option value="외박">외박</option>
+                                    <option value="외출">외출</option>
+                                    <option value="퇴소">퇴소</option>
+                                    <option value="신규">신규</option>
+                                    <option value="이동-">이동-</option>
+                                    <option value="이동+">이동+</option>
+                                    <option value="등미">등미</option>
+                                    <option value="미배정">미배정</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-comment"></i> 비고</label>
+                                <input type="text" class="manual-note" placeholder="비고 사항" />
+                            </div>
+                            <div class="form-group" style="align-self: end;">
+                                <button class="btn btn-danger btn-small" onclick="removeManualEntry(this)" style="padding: 8px 12px; font-size: 0.9rem;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="addManualEntry()">
+                        <i class="fas fa-plus"></i> 행 추가
+                    </button>
+                    <button class="btn btn-success" onclick="applyManualEntries()">
+                        <i class="fas fa-check"></i> 수동 입력 적용
+                    </button>
+                </div>
+            </div>
+
             <!-- Control Panel -->
             <div class="control-panel">
                 <div class="control-row">
@@ -1298,37 +1372,37 @@
 
             <!-- Overall Status Cards -->
             <div class="status-cards">
-                <div class="status-card current">
+                <div class="status-card current" onclick="showStatusStudents('current')">
                     <h3><i class="fas fa-users"></i> 총 현재원</h3>
                     <div class="count" id="total-current">0</div>
                     <div class="label">전체</div>
                 </div>
-                <div class="status-card absent">
+                <div class="status-card absent" onclick="showStatusStudents('absent')">
                     <h3><i class="fas fa-bed"></i> 총 외박</h3>
                     <div class="count" id="total-absent">0</div>
                     <div class="label">전체</div>
                 </div>
-                <div class="status-card new">
+                <div class="status-card new" onclick="showStatusStudents('new')">
                     <h3><i class="fas fa-user-plus"></i> 총 신규</h3>
                     <div class="count" id="total-new">0</div>
                     <div class="label">전체</div>
                 </div>
-                <div class="status-card checkout">
+                <div class="status-card checkout" onclick="showStatusStudents('checkout')">
                     <h3><i class="fas fa-sign-out-alt"></i> 총 퇴소</h3>
                     <div class="count" id="total-checkout">0</div>
                     <div class="label">전체</div>
                 </div>
-                <div class="status-card move-out">
+                <div class="status-card move-out" onclick="showStatusStudents('moveOut')">
                     <h3><i class="fas fa-arrow-left"></i> 총 이동-</h3>
                     <div class="count" id="total-move-out">0</div>
                     <div class="label">전체</div>
                 </div>
-                <div class="status-card move-in">
+                <div class="status-card move-in" onclick="showStatusStudents('moveIn')">
                     <h3><i class="fas fa-arrow-right"></i> 총 이동+</h3>
                     <div class="count" id="total-move-in">0</div>
                     <div class="label">전체</div>
                 </div>
-                <div class="status-card late">
+                <div class="status-card late" onclick="showStatusStudents('late')">
                     <h3><i class="fas fa-clock"></i> 총 등미</h3>
                     <div class="count" id="total-late">0</div>
                     <div class="label">전체</div>
@@ -1728,6 +1802,7 @@
                                         studentPhone: studentRow[6] || '',
                                         librarySeats: studentRow[7] || '',
                                         advisor: studentRow[8] || '',
+                                        group: studentRow[9] || '',
                                         birthDate: studentRow[10] || '',
                                         gender: genderMapping[building] || '',
                                         checkInDate: studentRow[12] || '',
@@ -1761,6 +1836,7 @@
                                 studentPhone: row[6] || '',
                                 librarySeats: row[7] || '',
                                 advisor: row[8] || '',
+                                group: row[9] || '',
                                 birthDate: row[10] || '',
                                 gender: genderMapping[building] || '',
                                 checkInDate: row[12] || '',
@@ -1839,6 +1915,7 @@
                                         studentPhone: generatePhoneNumber(),
                                         librarySeats: `L${Math.floor(Math.random() * 300) + 1}`,
                                         advisor: `담임${Math.floor(Math.random() * 10) + 1}`,
+                                        group: `그룹${Math.floor(Math.random() * 5) + 1}`,
                                         birthDate: generateBirthDate(),
                                         gender: genderMapping[building],
                                         checkInDate: generateCheckInDate(),
@@ -1859,6 +1936,7 @@
                                         studentPhone: '',
                                         librarySeats: '',
                                         advisor: '',
+                                        group: '',
                                         birthDate: '',
                                         gender: genderMapping[building],
                                         checkInDate: '',
@@ -1884,6 +1962,7 @@
                                     studentPhone: generatePhoneNumber(),
                                     librarySeats: `L${Math.floor(Math.random() * 300) + 1}`,
                                     advisor: `담임${Math.floor(Math.random() * 10) + 1}`,
+                                    group: `그룹${Math.floor(Math.random() * 5) + 1}`,
                                     birthDate: generateBirthDate(),
                                     gender: genderMapping[building],
                                     checkInDate: generateCheckInDate(),
@@ -1904,6 +1983,7 @@
                                     studentPhone: '',
                                     librarySeats: '',
                                     advisor: '',
+                                    group: '',
                                     birthDate: '',
                                     gender: genderMapping[building],
                                     checkInDate: '',
@@ -2077,13 +2157,213 @@
             document.getElementById('late-input').value = late;
         }
 
+        // 상태별 학생 표시 함수 (새로 추가)
+        function showStatusStudents(statusType) {
+            console.log(`📋 ${statusType} 상태 학생 검색 중...`);
+            
+            // 현재 제출된 보고서에서 해당 상태 학생들 찾기
+            const today = new Date().toDateString();
+            const allReports = JSON.parse(localStorage.getItem('submittedReports') || '{}');
+            
+            // 오늘 데이터가 없으면 최근 데이터 사용
+            let useReports = allReports[today] || {};
+            let useDate = today;
+            
+            if (Object.keys(useReports).length === 0) {
+                const allDates = Object.keys(allReports).sort((a, b) => new Date(b) - new Date(a));
+                if (allDates.length > 0) {
+                    useDate = allDates[0];
+                    useReports = allReports[useDate] || {};
+                }
+            }
+            
+            console.log(`📅 ${useDate} 데이터 사용:`, Object.keys(useReports).length, '개 보고서');
+            
+            // 해당 상태의 학생들 수집
+            const statusStudents = [];
+            
+            Object.values(useReports).forEach(report => {
+                if (report.students && report.students[statusType]) {
+                    statusStudents.push(...report.students[statusType]);
+                }
+            });
+            
+            console.log(`🔍 ${statusType} 상태 학생:`, statusStudents.length, '명');
+            
+            // 상태명 매핑
+            const statusNames = {
+                current: '현재원',
+                absent: '외박',
+                new: '신규',
+                checkout: '퇴소',
+                moveOut: '이동-',
+                moveIn: '이동+',
+                late: '등미'
+            };
+            
+            if (statusStudents.length > 0) {
+                displayStudentCards(statusStudents, `${statusNames[statusType]} 학생 목록 (${statusStudents.length}명)`);
+                document.getElementById('student-detail-cards').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+            } else {
+                showMessage(`${statusNames[statusType]} 상태의 학생이 없습니다.`, 'warning');
+            }
+        }
+
+        // 수동 입력 관련 함수들 (새로 추가)
+        function addManualEntry() {
+            const container = document.getElementById('manual-entries');
+            const newRow = document.createElement('div');
+            newRow.className = 'manual-entry-row';
+            newRow.innerHTML = `
+                <div class="control-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-door-open"></i> 기숙사 번호</label>
+                        <input type="text" class="manual-room" placeholder="예: A101, B203-2" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> 학생 이름</label>
+                        <input type="text" class="manual-name" placeholder="학생 이름" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-list"></i> 상태</label>
+                        <select class="manual-status">
+                            <option value="">상태 선택</option>
+                            <option value="정상">정상</option>
+                            <option value="외박">외박</option>
+                            <option value="외출">외출</option>
+                            <option value="퇴소">퇴소</option>
+                            <option value="신규">신규</option>
+                            <option value="이동-">이동-</option>
+                            <option value="이동+">이동+</option>
+                            <option value="등미">등미</option>
+                            <option value="미배정">미배정</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-comment"></i> 비고</label>
+                        <input type="text" class="manual-note" placeholder="비고 사항" />
+                    </div>
+                    <div class="form-group" style="align-self: end;">
+                        <button class="btn btn-danger btn-small" onclick="removeManualEntry(this)" style="padding: 8px 12px; font-size: 0.9rem;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function removeManualEntry(button) {
+            const container = document.getElementById('manual-entries');
+            const rows = container.querySelectorAll('.manual-entry-row');
+            
+            // 최소 1개 행은 유지
+            if (rows.length > 1) {
+                button.closest('.manual-entry-row').remove();
+            } else {
+                showMessage('최소 1개 행은 유지되어야 합니다.', 'warning');
+            }
+        }
+
+        function applyManualEntries() {
+            const rows = document.querySelectorAll('.manual-entry-row');
+            let appliedCount = 0;
+            
+            rows.forEach(row => {
+                const room = row.querySelector('.manual-room').value.trim();
+                const name = row.querySelector('.manual-name').value.trim();
+                const status = row.querySelector('.manual-status').value;
+                const note = row.querySelector('.manual-note').value.trim();
+                
+                if (room && name && status) {
+                    // 해당 학생 찾기
+                    const student = googleSheetData.find(s => s.room === room && s.name === name);
+                    
+                    if (student) {
+                        // 기존 학생 정보 업데이트
+                        student.status = status;
+                        student.note = note;
+                        
+                        // 지속적 상태 저장
+                        const persistentKey = `${room}_${name}`;
+                        if (status === '외박' || status === '등미') {
+                            persistentStatuses[persistentKey] = status;
+                        } else {
+                            delete persistentStatuses[persistentKey];
+                        }
+                        
+                        appliedCount++;
+                    } else if (room && name) {
+                        // 새 학생 추가 (기본 정보로)
+                        const building = room.charAt(0).toUpperCase();
+                        const newStudent = {
+                            room: room,
+                            originalRoom: room.split('-')[0],
+                            bedNumber: room.includes('-') ? parseInt(room.split('-')[1]) : 1,
+                            name: name,
+                            status: status,
+                            note: note,
+                            parentPhone: '',
+                            studentPhone: '',
+                            librarySeats: '',
+                            advisor: '',
+                            group: '',
+                            birthDate: '',
+                            gender: genderMapping[building] || '',
+                            checkInDate: '',
+                            school: '',
+                            class: '',
+                            is3PersonRoom: room.includes('-')
+                        };
+                        
+                        googleSheetData.push(newStudent);
+                        
+                        // 지속적 상태 저장
+                        const persistentKey = `${room}_${name}`;
+                        if (status === '외박' || status === '등미') {
+                            persistentStatuses[persistentKey] = status;
+                        }
+                        
+                        appliedCount++;
+                    }
+                }
+            });
+            
+            if (appliedCount > 0) {
+                localStorage.setItem('persistentStatuses', JSON.stringify(persistentStatuses));
+                showMessage(`${appliedCount}건의 수동 입력이 적용되었습니다.`, 'success');
+                
+                // 현재 선택된 층이 있으면 데이터 새로고침
+                const building = document.getElementById('building-select').value;
+                const floor = document.getElementById('floor-select').value;
+                if (building && floor) {
+                    loadStudentData();
+                }
+                
+                // 입력 필드 초기화
+                rows.forEach(row => {
+                    row.querySelector('.manual-room').value = '';
+                    row.querySelector('.manual-name').value = '';
+                    row.querySelector('.manual-status').value = '';
+                    row.querySelector('.manual-note').value = '';
+                });
+            } else {
+                showMessage('적용할 수 있는 데이터가 없습니다. 기숙사 번호, 학생 이름, 상태를 모두 입력해주세요.', 'warning');
+            }
+        }
+
         // 학생 상태 업데이트 (지속적 상태 저장 포함)
+        // 학생 상태 업데이트 (수정된 버전)
         function updateStudentStatus(roomCode, status) {
             const student = googleSheetData.find(s => s.room === roomCode);
             if (student) {
+                // 이전 상태 확인
+                const oldStatus = student.status;
                 student.status = status;
                 
-                // 외박, 등미 상태는 지속적으로 저장
+                // 지속적 상태 관리
                 const persistentKey = `${roomCode}_${student.name}`;
                 if (status === '외박' || status === '등미') {
                     persistentStatuses[persistentKey] = status;
@@ -2093,7 +2373,11 @@
                 localStorage.setItem('persistentStatuses', JSON.stringify(persistentStatuses));
                 
                 loadStudentData(); // 카운트 재계산
-                console.log(`${roomCode} 학생 상태 변경: ${status}`);
+                
+                // 상태 변경 로그 (외박만 제대로 표시되는 문제 해결)
+                if (status && status !== oldStatus) {
+                    console.log(`${roomCode} 학생 상태 변경: ${oldStatus || '정상'} → ${status}`);
+                }
             }
         }
 
@@ -2609,6 +2893,10 @@
                             <div class="info-row">
                                 <span class="info-label">라이브러리 좌석</span>
                                 <span class="info-value">${fullStudentData.librarySeats || '-'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">그룹</span>
+                                <span class="info-value">${fullStudentData.group || '-'}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">생활담임</span>
