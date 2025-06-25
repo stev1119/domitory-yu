@@ -2122,7 +2122,7 @@
                             `;
                             studentGrid.appendChild(studentItem);
                             
-                            // 새로운 집계 방식
+                            // 새로운 집계 방식 (현재원 = 신규 + 정상 + 이동+)
                             if (studentData.name !== '미배정' && studentData.status !== '미배정') {
                                 switch (studentData.status) {
                                     case '외박': absentCount++; break;
@@ -2131,14 +2131,14 @@
                                         newCount++; 
                                         currentCount++; // 신규는 현재원에 포함
                                         break;
-                                    case '이동-': moveOutCount++; break;
+                                    case '이동-': moveOutCount++; break; // 현재원에서 제외
                                     case '이동+': 
                                         moveInCount++; 
                                         currentCount++; // 이동+는 현재원에 포함
                                         break;
                                     case '등미': lateCount++; break;
                                     default: // '정상' 또는 빈 값
-                                        currentCount++; 
+                                        currentCount++; // 정상은 현재원에 포함
                                         break;
                                 }
                             }
@@ -2175,7 +2175,7 @@
                         `;
                         studentGrid.appendChild(studentItem);
                         
-                        // 새로운 집계 방식
+                        // 새로운 집계 방식 (현재원 = 신규 + 정상 + 이동+)
                         if (studentData.name !== '미배정' && studentData.status !== '미배정') {
                             switch (studentData.status) {
                                 case '외박': absentCount++; break;
@@ -2184,14 +2184,14 @@
                                     newCount++; 
                                     currentCount++; // 신규는 현재원에 포함
                                     break;
-                                case '이동-': moveOutCount++; break;
+                                case '이동-': moveOutCount++; break; // 현재원에서 제외
                                 case '이동+': 
                                     moveInCount++; 
                                     currentCount++; // 이동+는 현재원에 포함
                                     break;
                                 case '등미': lateCount++; break;
                                 default: // '정상' 또는 빈 값
-                                    currentCount++; 
+                                    currentCount++; // 정상은 현재원에 포함
                                     break;
                             }
                         }
@@ -2414,6 +2414,53 @@
             }
         }
 
+        // 수동 입력 카운트 계산 함수 (현재원 수정)
+        function getManualStudentCounts() {
+            const rows = document.querySelectorAll('.manual-student-row');
+            
+            let manualCounts = {
+                current: 0, absent: 0, new: 0, checkout: 0,
+                moveOut: 0, moveIn: 0, late: 0, total: 0
+            };
+            
+            rows.forEach(row => {
+                const room = row.querySelector('.manual-student-room').value.trim();
+                const name = row.querySelector('.manual-student-name').value.trim();
+                const status = row.querySelector('.manual-student-status').value;
+                
+                // 기숙사 번호와 이름이 모두 입력된 경우만 카운트
+                if (room && name && status) {
+                    manualCounts.total++;
+                    
+                    switch (status) {
+                        case '외박': manualCounts.absent++; break;
+                        case '퇴소': manualCounts.checkout++; break;
+                        case '신규': 
+                            manualCounts.new++; 
+                            manualCounts.current++; // 신규는 현재원에 포함
+                            break;
+                        case '이동-': manualCounts.moveOut++; break; // 현재원에서 제외
+                        case '이동+': 
+                            manualCounts.moveIn++; 
+                            manualCounts.current++; // 이동+는 현재원에 포함
+                            break;
+                        case '등미': manualCounts.late++; break;
+                        case '정상':
+                            manualCounts.current++; // 정상은 현재원에 포함
+                            break;
+                        case '미배정':
+                            // 미배정은 카운트하지 않음
+                            break;
+                        default: 
+                            // 기본값도 현재원에 포함하지 않음
+                            break;
+                    }
+                }
+            });
+            
+            return manualCounts;
+        }
+
         // 수동 학생 현황 관련 함수들 (새로 추가)
         function addManualStudentRow() {
             const container = document.getElementById('manual-student-entries');
@@ -2495,15 +2542,17 @@
                             manualCounts.new++; 
                             manualCounts.current++; // 신규는 현재원에 포함
                             break;
-                        case '이동-': manualCounts.moveOut++; break;
+                        case '이동-': manualCounts.moveOut++; break; // 현재원에서 제외
                         case '이동+': 
                             manualCounts.moveIn++; 
                             manualCounts.current++; // 이동+는 현재원에 포함
                             break;
                         case '등미': manualCounts.late++; break;
                         case '정상':
-                        default: 
-                            manualCounts.current++; 
+                            manualCounts.current++; // 정상은 현재원에 포함
+                            break;
+                        case '미배정':
+                            // 미배정은 카운트하지 않음
                             break;
                     }
                 }
@@ -2536,16 +2585,16 @@
                                     case '퇴소': autoCounts.checkout++; break;
                                     case '신규': 
                                         autoCounts.new++; 
-                                        autoCounts.current++;
+                                        autoCounts.current++; // 신규는 현재원에 포함
                                         break;
-                                    case '이동-': autoCounts.moveOut++; break;
+                                    case '이동-': autoCounts.moveOut++; break; // 현재원에서 제외
                                     case '이동+': 
                                         autoCounts.moveIn++; 
-                                        autoCounts.current++;
+                                        autoCounts.current++; // 이동+는 현재원에 포함
                                         break;
                                     case '등미': autoCounts.late++; break;
-                                    default: 
-                                        autoCounts.current++; 
+                                    default: // '정상' 또는 빈 값
+                                        autoCounts.current++; // 정상은 현재원에 포함
                                         break;
                                 }
                             }
@@ -2562,16 +2611,16 @@
                                 case '퇴소': autoCounts.checkout++; break;
                                 case '신규': 
                                     autoCounts.new++; 
-                                    autoCounts.current++;
+                                    autoCounts.current++; // 신규는 현재원에 포함
                                     break;
-                                case '이동-': autoCounts.moveOut++; break;
+                                case '이동-': autoCounts.moveOut++; break; // 현재원에서 제외
                                 case '이동+': 
                                     autoCounts.moveIn++; 
-                                    autoCounts.current++;
+                                    autoCounts.current++; // 이동+는 현재원에 포함
                                     break;
                                 case '등미': autoCounts.late++; break;
-                                default: 
-                                    autoCounts.current++; 
+                                default: // '정상' 또는 빈 값
+                                    autoCounts.current++; // 정상은 현재원에 포함
                                     break;
                             }
                         }
@@ -2597,7 +2646,7 @@
                 
                 console.log('📊 자동 집계:', autoCounts);
                 console.log('✋ 수동 집계:', manualCounts);
-                console.log('🎯 총 합계:', totalCounts);
+                console.log('🎯 총 합계 (현재원=신규+정상+이동+):', totalCounts);
             }
         }
 
@@ -2797,6 +2846,20 @@
                 message += `• 이동+: ${reportData.moveIn}명\n`;
                 message += `• 등미: ${reportData.late}명\n\n`;
                 
+                // 수동 입력 현황 추가
+                if (reportData.manualCounts && (reportData.manualCounts.total > 0)) {
+                    message += `🖊️ **수동 입력 현황**\n`;
+                    message += `• 수동 입력 총 ${reportData.manualCounts.total}명\n`;
+                    if (reportData.manualCounts.current > 0) message += `  - 현재원: ${reportData.manualCounts.current}명\n`;
+                    if (reportData.manualCounts.absent > 0) message += `  - 외박: ${reportData.manualCounts.absent}명\n`;
+                    if (reportData.manualCounts.new > 0) message += `  - 신규: ${reportData.manualCounts.new}명\n`;
+                    if (reportData.manualCounts.checkout > 0) message += `  - 퇴소: ${reportData.manualCounts.checkout}명\n`;
+                    if (reportData.manualCounts.moveOut > 0) message += `  - 이동-: ${reportData.manualCounts.moveOut}명\n`;
+                    if (reportData.manualCounts.moveIn > 0) message += `  - 이동+: ${reportData.manualCounts.moveIn}명\n`;
+                    if (reportData.manualCounts.late > 0) message += `  - 등미: ${reportData.manualCounts.late}명\n`;
+                    message += `\n`;
+                }
+                
                 // 상세 학생 정보 추가
                 const statusNames = {
                     absent: '🛏️ 외박',
@@ -2875,7 +2938,9 @@
             showLoading();
             
             try {
-                // 보고 데이터 수집
+                // 보고 데이터 수집 (수동 입력 포함)
+                const manualCounts = getManualStudentCounts();
+                
                 const reportData = {
                     manager: manager,
                     building: building,
@@ -2889,7 +2954,8 @@
                     late: parseInt(document.getElementById('late-input').value) || 0,
                     timestamp: new Date().toISOString(),
                     isRevision: isRevision,
-                    students: getStudentDetails(building, floor)
+                    students: getStudentDetails(building, floor),
+                    manualCounts: manualCounts // 수동 입력 카운트 추가
                 };
                 
                 // 잔디 웹훅으로 전송
@@ -2912,7 +2978,7 @@
             }
         }
 
-        // 학생 상세 정보 수집
+        // 학생 상세 정보 수집 (수동 입력 포함)
         function getStudentDetails(building, floor) {
             const students = {
                 absent: [],
@@ -2926,6 +2992,7 @@
             const floorInfo = dormitoryStructure[building][floor];
             const is3PersonRoom = parseInt(floor) === 4;
             
+            // 자동 집계 학생들 (기존 로직)
             if (is3PersonRoom) {
                 // 3인실 처리
                 for (let roomNum = floorInfo.start; roomNum <= floorInfo.end; roomNum++) {
@@ -2978,6 +3045,33 @@
                 }
             }
             
+            // 수동 입력 학생들 추가
+            const manualRows = document.querySelectorAll('.manual-student-row');
+            manualRows.forEach(row => {
+                const room = row.querySelector('.manual-student-room').value.trim();
+                const name = row.querySelector('.manual-student-name').value.trim();
+                const status = row.querySelector('.manual-student-status').value;
+                const note = row.querySelector('.manual-student-note').value.trim();
+                
+                if (room && name && status && status !== '정상' && status !== '미배정') {
+                    const manualStudentInfo = {
+                        room: room,
+                        name: name,
+                        note: note || '(수동입력)'
+                    };
+                    
+                    switch (status) {
+                        case '외박': students.absent.push(manualStudentInfo); break;
+                        case '신규': students.new.push(manualStudentInfo); break;
+                        case '퇴소': students.checkout.push(manualStudentInfo); break;
+                        case '이동-': students.moveOut.push(manualStudentInfo); break;
+                        case '이동+': students.moveIn.push(manualStudentInfo); break;
+                        case '등미': students.late.push(manualStudentInfo); break;
+                    }
+                }
+            });
+            
+            console.log('📋 보고서 학생 상세 (자동+수동):', students);
             return students;
         }
 
@@ -3286,11 +3380,11 @@
                             </div>
                             <div class="info-row">
                                 <span class="info-label">생활담임</span>
-                                <span class="info-value">${fullStudentData.advisor || '-'}</span>
+                                <span class="info-value">${fullStudentData.group || '-'}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">그룹</span>
-                                <span class="info-value">${fullStudentData.group || '-'}</span>
+                                <span class="info-value">${fullStudentData.advisor || '-'}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">생년월일</span>
