@@ -6,18 +6,6 @@
     <title>기숙사 대시보드</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -29,32 +17,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             overflow-x: hidden;
-        }
-
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.1;
-        }
-
-        .bg-animation::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
+            color: white;
         }
 
         .app-container {
@@ -70,11 +33,11 @@
         }
 
         .clock {
-            background: var(--glass-bg);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 20px;
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             display: inline-block;
             min-width: 300px;
         }
@@ -95,14 +58,14 @@
         }
 
         .header {
-            background: var(--glass-bg);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 30px;
             text-align: center;
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 20px 25px rgba(0,0,0,0.1);
         }
 
         .header h1 {
@@ -121,9 +84,9 @@
         }
 
         .search-container {
-            background: var(--glass-bg);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
             padding: 25px;
             margin-bottom: 30px;
@@ -161,7 +124,7 @@
             padding: 15px 25px;
             border: none;
             border-radius: 50px;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             cursor: pointer;
             font-size: 1rem;
@@ -231,10 +194,6 @@
             transform: translateY(-2px);
         }
 
-        .quick-result-item:last-child {
-            margin-bottom: 0;
-        }
-
         .quick-result-header {
             display: flex;
             justify-content: space-between;
@@ -293,9 +252,9 @@
         }
 
         .status-card {
-            background: var(--glass-bg);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
             padding: 25px;
             text-align: center;
@@ -307,7 +266,7 @@
 
         .status-card:hover {
             transform: translateY(-5px) scale(1.02);
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 20px 25px rgba(0,0,0,0.1);
         }
 
         .status-card.current { border-left: 4px solid #4facfe; }
@@ -345,9 +304,9 @@
         }
 
         .report-card {
-            background: var(--glass-bg);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
             padding: 25px;
             cursor: pointer;
@@ -358,7 +317,7 @@
 
         .report-card:hover {
             transform: translateY(-5px) scale(1.02);
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 20px 25px rgba(0,0,0,0.1);
         }
 
         .report-card .card-title {
@@ -402,9 +361,9 @@
         }
 
         .student-detail-card {
-            background: var(--glass-bg);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
             padding: 25px;
             transition: all 0.3s ease;
@@ -419,12 +378,12 @@
             left: 0;
             width: 100%;
             height: 4px;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .student-detail-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 20px 25px rgba(0,0,0,0.1);
         }
 
         .student-detail-card .card-header {
@@ -490,21 +449,21 @@
 
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
         }
 
         .btn-primary {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
         .btn-success {
-            background: var(--success-gradient);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
         }
 
         .btn-warning {
-            background: var(--warning-gradient);
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
             color: white;
         }
 
@@ -520,51 +479,40 @@
             .app-container {
                 padding: 10px;
             }
-
             .header {
                 padding: 15px;
                 margin-bottom: 20px;
             }
-
             .header h1 {
                 font-size: 1.8rem;
             }
-
             .time-display {
                 font-size: 2.5rem;
             }
-            
             .date-display {
                 font-size: 1rem;
             }
-            
             .clock {
                 min-width: 250px;
                 padding: 15px;
             }
-
             .status-cards {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
             }
-
             .status-card {
                 padding: 15px 10px;
             }
-
             .status-card .count {
                 font-size: 2rem;
             }
-
             .search-bar {
                 flex-direction: column;
                 gap: 10px;
             }
-
             .student-detail-cards {
                 grid-template-columns: 1fr;
             }
-
             .report-summary {
                 grid-template-columns: 1fr;
             }
@@ -578,10 +526,7 @@
     </style>
 </head>
 <body>
-    <div class="bg-animation"></div>
-    
     <div class="app-container">
-        <!-- 시계 -->
         <div class="clock-container">
             <div class="clock" id="current-time">
                 <div class="time-display" id="time-display">00:00:00</div>
@@ -589,39 +534,31 @@
             </div>
         </div>
 
-        <!-- Header -->
         <div class="header">
             <h1><i class="fas fa-chart-bar"></i> 기숙사 대시보드</h1>
             <p>전체 현황 조회 및 통계 분석</p>
         </div>
 
-        <!-- Search Container -->
         <div class="search-container">
             <div class="search-bar">
                 <input type="text" class="search-input" id="search-input" 
-                       placeholder="학생 이름, 기숙사 번호, 라이브러리 좌석번호로 검색..." 
-                       oninput="performRealTimeSearch()" 
-                       onkeypress="handleSearchKeyPress(event)">
-                <button class="search-btn" onclick="searchStudent()">
+                       placeholder="학생 이름, 기숙사 번호, 라이브러리 좌석번호로 검색..." >
+                <button class="search-btn" id="search-btn">
                     <i class="fas fa-search"></i> 검색
                 </button>
             </div>
             
-            <!-- 실시간 검색 결과 -->
             <div id="search-results-container" style="display: none;">
                 <div class="search-results-header">
                     <h3 id="search-results-title">검색 결과</h3>
-                    <button class="close-search" onclick="clearSearch()">
+                    <button class="close-search" id="close-search-btn">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div id="quick-search-results" class="quick-search-results">
-                    <!-- 실시간 검색 결과가 여기에 표시됩니다 -->
-                </div>
+                <div id="quick-search-results" class="quick-search-results"></div>
             </div>
         </div>
 
-        <!-- Overall Status Cards -->
         <div class="status-cards">
             <div class="status-card current">
                 <h3><i class="fas fa-users"></i> 총 현재원</h3>
@@ -660,9 +597,8 @@
             </div>
         </div>
 
-        <!-- Gender-based Status Cards -->
         <div class="report-summary">
-            <div class="report-card" onclick="showGenderDetails('male')">
+            <div class="report-card" id="male-report-card">
                 <div class="card-title">
                     <i class="fas fa-mars" style="color: #4facfe;"></i> 남학생 현황
                 </div>
@@ -686,7 +622,7 @@
                 </div>
             </div>
             
-            <div class="report-card" onclick="showGenderDetails('female')">
+            <div class="report-card" id="female-report-card">
                 <div class="card-title">
                     <i class="fas fa-venus" style="color: #fa709a;"></i> 여학생 현황
                 </div>
@@ -711,51 +647,104 @@
             </div>
         </div>
 
-        <!-- Building/Floor Reports -->
-        <div class="report-summary" id="building-reports">
-            <!-- 동별, 층별 보고 현황이 여기에 동적으로 추가됩니다 -->
-        </div>
+        <div class="report-summary" id="building-reports"></div>
 
-        <!-- Management Actions -->
         <div class="action-buttons">
-            <button class="btn btn-primary" onclick="showStatistics()">
+            <button class="btn btn-primary" id="show-stats-btn">
                 <i class="fas fa-chart-pie"></i> 전체 통계 보기
             </button>
-            <button class="btn btn-warning" onclick="checkConnections()">
+            <button class="btn btn-warning" id="check-connections-btn">
                 <i class="fas fa-wifi"></i> 연결 상태 확인
             </button>
-            <button class="btn btn-success" onclick="exportData()">
+            <button class="btn btn-success" id="export-data-btn">
                 <i class="fas fa-download"></i> 데이터 내보내기
             </button>
         </div>
 
-        <!-- Student Detail Cards -->
-        <div class="student-detail-cards" id="student-detail-cards">
-            <!-- 학생 상세 정보 카드가 여기에 동적으로 추가됩니다 -->
-        </div>
+        <div class="student-detail-cards" id="student-detail-cards"></div>
     </div>
 
     <script>
-        // 전역 변수 (인원보고 시스템과 동일한 데이터 공유)
-        let googleSheetData = [];
-        let submittedReports = JSON.parse(localStorage.getItem('submittedReports') || '{}');
+        // 전역 변수 선언
+        var googleSheetData = [];
+        var submittedReports = JSON.parse(localStorage.getItem('submittedReports') || '{}');
         
-        // API 설정
-        const GOOGLE_API_KEY = 'AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY';
-        const SPREADSHEET_ID = '1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc';
-        const SHEET_NAME = 'yulee';
-        const JANDI_WEBHOOK_URL = 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4';
+        var GOOGLE_API_KEY = 'AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY';
+        var SPREADSHEET_ID = '1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc';
+        var SHEET_NAME = 'yulee';
         
-        const genderMapping = {
+        var genderMapping = {
             'A': 'male', 'B': 'male', 'C': 'male', 'F': 'male',
             'D': 'female', 'E': 'female'
         };
 
         // 시계 업데이트 함수
         function updateClock() {
-            const now = new Date();
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
             
-            // 전체 현황 업데이트
+            var timeString = (hours < 10 ? '0' : '') + hours + ':' +
+                           (minutes < 10 ? '0' : '') + minutes + ':' +
+                           (seconds < 10 ? '0' : '') + seconds;
+            
+            var year = now.getFullYear();
+            var month = now.getMonth() + 1;
+            var date = now.getDate();
+            var dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+            var dayName = dayNames[now.getDay()];
+            var dateString = year + '년 ' + month + '월 ' + date + '일 (' + dayName + ')';
+            
+            document.getElementById('time-display').textContent = timeString;
+            document.getElementById('date-display').textContent = dateString;
+        }
+
+        // 집계 데이터 로드
+        function loadSummaryData() {
+            var today = new Date().toDateString();
+            var todayReports = submittedReports[today] || {};
+            
+            var totalCounts = {
+                current: 0, absent: 0, new: 0, checkout: 0,
+                moveOut: 0, moveIn: 0, late: 0
+            };
+            
+            var maleCounts = {
+                current: 0, absent: 0, new: 0, checkout: 0,
+                moveOut: 0, moveIn: 0, late: 0
+            };
+            
+            var femaleCounts = {
+                current: 0, absent: 0, new: 0, checkout: 0,
+                moveOut: 0, moveIn: 0, late: 0
+            };
+            
+            for (var key in todayReports) {
+                var report = todayReports[key];
+                totalCounts.current += report.current || 0;
+                totalCounts.absent += report.absent || 0;
+                totalCounts.new += report.new || 0;
+                totalCounts.checkout += report.checkout || 0;
+                totalCounts.moveOut += report.moveOut || 0;
+                totalCounts.moveIn += report.moveIn || 0;
+                totalCounts.late += report.late || 0;
+                
+                var gender = genderMapping[report.building];
+                if (gender === 'male') {
+                    maleCounts.current += report.current || 0;
+                    maleCounts.absent += report.absent || 0;
+                    maleCounts.new += report.new || 0;
+                    maleCounts.checkout += report.checkout || 0;
+                } else if (gender === 'female') {
+                    femaleCounts.current += report.current || 0;
+                    femaleCounts.absent += report.absent || 0;
+                    femaleCounts.new += report.new || 0;
+                    femaleCounts.checkout += report.checkout || 0;
+                }
+            }
+            
+            // UI 업데이트
             document.getElementById('total-current').textContent = totalCounts.current;
             document.getElementById('total-absent').textContent = totalCounts.absent;
             document.getElementById('total-new').textContent = totalCounts.new;
@@ -764,7 +753,6 @@
             document.getElementById('total-move-in').textContent = totalCounts.moveIn;
             document.getElementById('total-late').textContent = totalCounts.late;
             
-            // 성별 현황 업데이트
             document.getElementById('male-current').textContent = maleCounts.current;
             document.getElementById('male-absent').textContent = maleCounts.absent;
             document.getElementById('male-new').textContent = maleCounts.new;
@@ -775,136 +763,74 @@
             document.getElementById('female-new').textContent = femaleCounts.new;
             document.getElementById('female-checkout').textContent = femaleCounts.checkout;
             
-            // 동별/층별 보고 현황 표시
             displayBuildingReports(todayReports);
+        }
+
+        // 동별 보고 현황 표시
+        function displayBuildingReports(reports) {
+            var container = document.getElementById('building-reports');
+            container.innerHTML = '';
             
-            // Google Sheets 데이터도 로드 (검색용)
-            if (googleSheetData.length === 0) {
-                loadGoogleSheetData();
+            for (var key in reports) {
+                var report = reports[key];
+                var reportCard = document.createElement('div');
+                reportCard.className = 'report-card';
+                
+                var cardContent = '<div class="card-title">' +
+                    '<i class="fas fa-building"></i> ' + report.building + '동 ' + report.floor + '층 - ' + report.manager +
+                    '</div>' +
+                    '<div class="card-stats">' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-value">' + (report.current || 0) + '</span>' +
+                            '<div class="stat-label">현재원</div>' +
+                        '</div>' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-value">' + (report.absent || 0) + '</span>' +
+                            '<div class="stat-label">외박</div>' +
+                        '</div>' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-value">' + (report.new || 0) + '</span>' +
+                            '<div class="stat-label">신규</div>' +
+                        '</div>' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-value">' + (report.checkout || 0) + '</span>' +
+                            '<div class="stat-label">퇴소</div>' +
+                        '</div>' +
+                    '</div>';
+                
+                reportCard.innerHTML = cardContent;
+                container.appendChild(reportCard);
             }
         }
 
-        // 동별/층별 보고 현황 표시
-        function displayBuildingReports(reports) {
-            const container = document.getElementById('building-reports');
-            container.innerHTML = '';
+        // Google Sheets 데이터 로드
+        function loadGoogleSheetData() {
+            console.log('Google Sheets 데이터 로드 시작...');
+            var range = SHEET_NAME + '!B:P';
+            var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + SPREADSHEET_ID + '/values/' + range + '?key=' + GOOGLE_API_KEY;
             
-            Object.entries(reports).forEach(([key, report]) => {
-                const reportCard = document.createElement('div');
-                reportCard.className = 'report-card';
-                reportCard.onclick = () => showBuildingDetails(report);
-                
-                reportCard.innerHTML = `
-                    <div class="card-title">
-                        <i class="fas fa-building"></i> ${report.building}동 ${report.floor}층 - ${report.manager}
-                    </div>
-                    <div class="card-stats">
-                        <div class="stat-item">
-                            <span class="stat-value">${report.current}</span>
-                            <div class="stat-label">현재원</div>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">${report.absent}</span>
-                            <div class="stat-label">외박</div>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">${report.new}</span>
-                            <div class="stat-label">신규</div>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">${report.checkout}</span>
-                            <div class="stat-label">퇴소</div>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">${report.moveOut}</span>
-                            <div class="stat-label">이동-</div>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">${report.moveIn}</span>
-                            <div class="stat-label">이동+</div>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">${report.late}</span>
-                            <div class="stat-label">등미</div>
-                        </div>
-                    </div>
-                `;
-                
-                container.appendChild(reportCard);
-            });
-        }
-
-        // Google Sheets 데이터 로드 (검색용)
-        async function loadGoogleSheetData() {
-            try {
-                console.log('Google Sheets 데이터 로드 시작...');
-                const range = `${SHEET_NAME}!B:P`;
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}?key=${GOOGLE_API_KEY}`;
-                
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                const rows = data.values || [];
-                
-                googleSheetData = [];
-                
-                // 1-3층 1인실 데이터 처리
-                for (let i = 1; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (row[0]) {
-                        const roomCode = row[0].toString().trim();
-                        const building = roomCode.charAt(0).toUpperCase();
-                        const roomNumber = parseInt(roomCode.substring(1));
-                        
-                        if (roomNumber < 400) {
-                            const studentData = {
-                                room: roomCode,
-                                name: row[1] || '미배정',
-                                status: row[2] || '',
-                                note: row[4] || '',
-                                parentPhone: row[5] || '',
-                                studentPhone: row[6] || '',
-                                librarySeats: row[7] || '',
-                                advisor: row[8] || '',
-                                birthDate: row[10] || '',
-                                gender: genderMapping[building] || '',
-                                checkInDate: row[12] || '',
-                                school: row[13] || '',
-                                class: row[14] || '',
-                                is3PersonRoom: false
-                            };
-                            googleSheetData.push(studentData);
-                        }
+            fetch(url)
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('HTTP error! status: ' + response.status);
                     }
-                }
-                
-                // 4층 3인실 데이터 처리
-                const tripleRoomRanges = {
-                    'A': { start: 188, rooms: { start: 401, end: 432 } },
-                    'B': { start: 406, rooms: { start: 401, end: 421 } },
-                    'C': { start: 654, rooms: { start: 401, end: 432 } },
-                    'D': { start: 884, rooms: { start: 401, end: 423 } },
-                    'E': { start: 1185, rooms: { start: 401, end: 440 } },
-                    'F': { start: 1403, rooms: { start: 401, end: 417 } }
-                };
-
-                Object.keys(tripleRoomRanges).forEach(building => {
-                    const range = tripleRoomRanges[building];
-                    let currentRowIndex = range.start - 1;
+                    return response.json();
+                })
+                .then(function(data) {
+                    var rows = data.values || [];
+                    googleSheetData = [];
                     
-                    for (let roomNum = range.rooms.start; roomNum <= range.rooms.end; roomNum++) {
-                        const roomCode = `${building}${roomNum}`;
-                        
-                        for (let bedNum = 1; bedNum <= 3; bedNum++) {
-                            if (currentRowIndex < rows.length && rows[currentRowIndex]) {
-                                const row = rows[currentRowIndex];
-                                const studentData = {
-                                    room: `${roomCode}-${bedNum}`,
-                                    originalRoom: roomCode,
-                                    bedNumber: bedNum,
+                    // 1-3층 1인실 데이터 처리
+                    for (var i = 1; i < rows.length; i++) {
+                        var row = rows[i];
+                        if (row[0]) {
+                            var roomCode = row[0].toString().trim();
+                            var building = roomCode.charAt(0).toUpperCase();
+                            var roomNumber = parseInt(roomCode.substring(1));
+                            
+                            if (roomNumber < 400) {
+                                var studentData = {
+                                    room: roomCode,
                                     name: row[1] || '미배정',
                                     status: row[2] || '',
                                     note: row[4] || '',
@@ -917,28 +843,63 @@
                                     checkInDate: row[12] || '',
                                     school: row[13] || '',
                                     class: row[14] || '',
-                                    is3PersonRoom: true
+                                    is3PersonRoom: false
                                 };
                                 googleSheetData.push(studentData);
                             }
-                            currentRowIndex++;
                         }
                     }
+                    
+                    console.log('검색용 데이터 ' + googleSheetData.length + '건 로드 완료');
+                })
+                .catch(function(error) {
+                    console.error('Google Sheets 로드 오류:', error);
+                    generateMockData();
                 });
-                
-                console.log(`검색용 데이터 ${googleSheetData.length}건 로드 완료`);
-                
-            } catch (error) {
-                console.error('Google Sheets 로드 오류:', error);
-                generateMockSearchData();
-            }
         }
 
-        // 실시간 검색 기능
+        // 모의 데이터 생성
+        function generateMockData() {
+            console.log('모의 데이터 생성 중...');
+            googleSheetData = [];
+            
+            var buildings = ['A', 'B', 'C', 'D', 'E', 'F'];
+            var names = ['김민준', '이서준', '박도윤', '최예준', '정시우', '강주원', '조하준', '윤지호'];
+            var advisors = ['이영운', '김혜정', '이시우', '고승완', '남인달'];
+            
+            for (var b = 0; b < buildings.length; b++) {
+                var building = buildings[b];
+                for (var room = 101; room <= 150; room++) {
+                    var hasStudent = Math.random() > 0.3;
+                    if (hasStudent) {
+                        var studentData = {
+                            room: building + room,
+                            name: names[Math.floor(Math.random() * names.length)],
+                            status: ['정상', '외박', '신규'][Math.floor(Math.random() * 3)],
+                            note: '',
+                            parentPhone: '010-1234-5678',
+                            studentPhone: '010-9876-5432',
+                            librarySeats: 'L' + Math.floor(Math.random() * 300 + 1),
+                            advisor: advisors[Math.floor(Math.random() * advisors.length)],
+                            birthDate: '2005-01-01',
+                            gender: genderMapping[building],
+                            checkInDate: '2024-03-01',
+                            school: '테스트고등학교',
+                            class: Math.floor(Math.random() * 3 + 1) + '학년',
+                            is3PersonRoom: false
+                        };
+                        googleSheetData.push(studentData);
+                    }
+                }
+            }
+            
+            console.log('모의 데이터 ' + googleSheetData.length + '건 생성 완료');
+        }
+
+        // 실시간 검색
         function performRealTimeSearch() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
-            const resultsContainer = document.getElementById('search-results-container');
-            const quickResults = document.getElementById('quick-search-results');
+            var searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            var resultsContainer = document.getElementById('search-results-container');
             
             if (searchTerm.length === 0) {
                 resultsContainer.style.display = 'none';
@@ -949,331 +910,157 @@
                 return;
             }
             
-            const results = googleSheetData.filter(student => {
-                const searchFields = [
-                    student.name,
-                    student.room,
-                    student.librarySeats,
-                    student.studentPhone,
-                    student.parentPhone,
-                    student.advisor,
-                    student.school,
-                    student.class,
-                    student.status
-                ].filter(field => field);
-                
-                return searchFields.some(field => 
-                    field.toLowerCase().includes(searchTerm)
-                );
-            });
+            var results = [];
+            for (var i = 0; i < googleSheetData.length; i++) {
+                var student = googleSheetData[i];
+                if (student.name && student.name.toLowerCase().indexOf(searchTerm) !== -1 ||
+                    student.room && student.room.toLowerCase().indexOf(searchTerm) !== -1 ||
+                    student.librarySeats && student.librarySeats.toLowerCase().indexOf(searchTerm) !== -1) {
+                    results.push(student);
+                }
+            }
             
-            displayQuickSearchResults(results, searchTerm);
+            displaySearchResults(results, searchTerm);
         }
-        
-        // 빠른 검색 결과 표시
-        function displayQuickSearchResults(results, searchTerm) {
-            const resultsContainer = document.getElementById('search-results-container');
-            const quickResults = document.getElementById('quick-search-results');
-            const title = document.getElementById('search-results-title');
+
+        // 검색 결과 표시
+        function displaySearchResults(results, searchTerm) {
+            var resultsContainer = document.getElementById('search-results-container');
+            var quickResults = document.getElementById('quick-search-results');
+            var title = document.getElementById('search-results-title');
             
             resultsContainer.style.display = 'block';
-            title.textContent = `"${searchTerm}" 검색 결과 (${results.length}건)`;
+            title.textContent = '"' + searchTerm + '" 검색 결과 (' + results.length + '건)';
             
             if (results.length === 0) {
-                quickResults.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
-                        <p>검색 결과가 없습니다.</p>
-                        <p style="font-size: 0.9rem;">다른 키워드로 검색해보세요.</p>
-                    </div>
-                `;
+                quickResults.innerHTML = '<div class="no-results">' +
+                    '<i class="fas fa-search" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>' +
+                    '<p>검색 결과가 없습니다.</p>' +
+                    '</div>';
                 return;
             }
             
-            const stats = {
-                students: results.filter(r => r.name !== '미배정').length,
-                empty: results.filter(r => r.name === '미배정').length,
-                male: results.filter(r => r.gender === 'male' && r.name !== '미배정').length,
-                female: results.filter(r => r.gender === 'female' && r.name !== '미배정').length
-            };
+            var html = '';
+            var displayResults = results.slice(0, 10);
             
-            let html = `
-                <div class="search-stats">
-                    <i class="fas fa-chart-bar"></i> 
-                    전체 ${results.length}건 | 
-                    학생 ${stats.students}명 | 
-                    빈 자리 ${stats.empty}개 | 
-                    남학생 ${stats.male}명 | 
-                    여학생 ${stats.female}명
-                </div>
-            `;
-            
-            const displayResults = results.slice(0, 10);
-            
-            displayResults.forEach(student => {
-                const statusColor = getStatusColor(student.status);
-                const statusText = student.status || '정상';
+            for (var i = 0; i < displayResults.length; i++) {
+                var student = displayResults[i];
+                html += '<div class="quick-result-item">' +
+                    '<div class="quick-result-header">' +
+                        '<div class="quick-result-name">' + student.name + '</div>' +
+                        '<div class="quick-result-room">' + student.room + '</div>' +
+                    '</div>' +
+                    '<div class="quick-result-details">' +
+                        '<div class="quick-result-detail">' +
+                            '<strong>상태:</strong> ' + (student.status || '정상') +
+                        '</div>';
+                        
+                if (student.librarySeats) {
+                    html += '<div class="quick-result-detail">' +
+                        '<strong>라이브러리:</strong> ' + student.librarySeats +
+                        '</div>';
+                }
                 
-                html += `
-                    <div class="quick-result-item" onclick="showStudentDetail('${student.room}')">
-                        <div class="quick-result-header">
-                            <div class="quick-result-name">${student.name}</div>
-                            <div class="quick-result-room">${student.room}</div>
-                        </div>
-                        <div class="quick-result-details">
-                            <div class="quick-result-detail">
-                                <strong>상태:</strong> <span style="color: ${statusColor};">${statusText}</span>
-                            </div>
-                            ${student.librarySeats ? `
-                                <div class="quick-result-detail">
-                                    <strong>라이브러리:</strong> ${student.librarySeats}
-                                </div>
-                            ` : ''}
-                            ${student.advisor ? `
-                                <div class="quick-result-detail">
-                                    <strong>담임:</strong> ${student.advisor}
-                                </div>
-                            ` : ''}
-                            ${student.class ? `
-                                <div class="quick-result-detail">
-                                    <strong>반:</strong> ${student.class}
-                                </div>
-                            ` : ''}
-                            ${student.note ? `
-                                <div class="quick-result-detail">
-                                    <strong>비고:</strong> ${student.note}
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            if (results.length > 10) {
-                html += `
-                    <div class="search-stats" style="text-align: center; margin-top: 15px;">
-                        <i class="fas fa-info-circle"></i> 
-                        ${results.length - 10}건의 추가 결과가 있습니다. 더 구체적인 검색어를 사용해보세요.
-                    </div>
-                `;
+                html += '</div></div>';
             }
             
             quickResults.innerHTML = html;
         }
-        
-        // 검색창에서 Enter 키 처리
-        function handleSearchKeyPress(event) {
-            if (event.key === 'Enter') {
-                searchStudent();
-            }
-        }
-        
-        // 메인 검색 함수
+
+        // 검색 실행
         function searchStudent() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            var searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
             if (!searchTerm) {
                 alert('검색어를 입력해주세요.');
                 return;
             }
             
-            const results = googleSheetData.filter(student => {
-                const searchFields = [
-                    student.name,
-                    student.room,
-                    student.librarySeats,
-                    student.studentPhone,
-                    student.parentPhone,
-                    student.advisor,
-                    student.school,
-                    student.class,
-                    student.status
-                ].filter(field => field);
-                
-                return searchFields.some(field => 
-                    field.toLowerCase().includes(searchTerm)
-                );
-            });
+            var results = [];
+            for (var i = 0; i < googleSheetData.length; i++) {
+                var student = googleSheetData[i];
+                if (student.name && student.name.toLowerCase().indexOf(searchTerm) !== -1 ||
+                    student.room && student.room.toLowerCase().indexOf(searchTerm) !== -1 ||
+                    student.librarySeats && student.librarySeats.toLowerCase().indexOf(searchTerm) !== -1) {
+                    results.push(student);
+                }
+            }
             
             if (results.length === 0) {
                 alert('검색 결과가 없습니다.');
                 return;
             }
             
-            displayStudentCards(results, `검색 결과: "${searchTerm}" (${results.length}명)`);
-            document.getElementById('student-detail-cards').scrollIntoView({ 
-                behavior: 'smooth' 
-            });
+            displayStudentCards(results, '검색 결과: "' + searchTerm + '" (' + results.length + '명)');
         }
 
-        // 개별 학생 상세 정보 표시
-        function showStudentDetail(roomCode) {
-            const student = googleSheetData.find(s => s.room === roomCode);
-            if (student) {
-                displayStudentCards([student], `${student.name} 상세 정보`);
-                document.getElementById('student-detail-cards').scrollIntoView({ 
-                    behavior: 'smooth' 
-                });
+        // 학생 카드 표시
+        function displayStudentCards(students, title) {
+            var container = document.getElementById('student-detail-cards');
+            container.innerHTML = '<h2 style="color: white; margin-bottom: 20px; text-align: center;">' + title + '</h2>';
+            
+            for (var i = 0; i < students.length; i++) {
+                var student = students[i];
+                var card = document.createElement('div');
+                card.className = 'student-detail-card';
+                
+                var cardHTML = '<div class="card-header">' +
+                    '<h4>' + student.name + '</h4>' +
+                    '<div class="status-badge" style="background: #4facfe;">' +
+                        (student.status || '정상') +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="card-body">' +
+                        '<div class="info-row">' +
+                            '<span class="info-label">기숙사 번호</span>' +
+                            '<span class="info-value">' + student.room + '</span>' +
+                        '</div>' +
+                        '<div class="info-row">' +
+                            '<span class="info-label">상태</span>' +
+                            '<span class="info-value">' + (student.status || '정상') + '</span>' +
+                        '</div>';
+                        
+                if (student.librarySeats) {
+                    cardHTML += '<div class="info-row">' +
+                        '<span class="info-label">라이브러리 좌석</span>' +
+                        '<span class="info-value">' + student.librarySeats + '</span>' +
+                        '</div>';
+                }
+                
+                if (student.advisor) {
+                    cardHTML += '<div class="info-row">' +
+                        '<span class="info-label">생활담임</span>' +
+                        '<span class="info-value">' + student.advisor + '</span>' +
+                        '</div>';
+                }
+                
+                cardHTML += '</div>';
+                card.innerHTML = cardHTML;
+                container.appendChild(card);
             }
         }
 
-        // 검색 결과 닫기
+        // 검색 닫기
         function clearSearch() {
             document.getElementById('search-input').value = '';
             document.getElementById('search-results-container').style.display = 'none';
             document.getElementById('student-detail-cards').innerHTML = '';
         }
 
-        // 성별 상세 정보 표시
-        function showGenderDetails(gender) {
-            const today = new Date().toDateString();
-            const todayReports = submittedReports[today] || {};
-            const students = [];
-            
-            Object.values(todayReports).forEach(report => {
-                if (genderMapping[report.building] === gender) {
-                    Object.values(report.students).forEach(statusStudents => {
-                        students.push(...statusStudents);
-                    });
-                }
-            });
-            
-            displayStudentCards(students, `${gender === 'male' ? '남학생' : '여학생'} 상세 정보`);
-        }
-
-        // 동/층별 상세 정보 표시
-        function showBuildingDetails(report) {
-            const students = [];
-            Object.values(report.students).forEach(statusStudents => {
-                students.push(...statusStudents);
-            });
-            
-            displayStudentCards(students, `${report.building}동 ${report.floor}층 상세 정보`);
-        }
-
-        // 학생 카드 표시
-        function displayStudentCards(students, title) {
-            const container = document.getElementById('student-detail-cards');
-            container.innerHTML = `<h2 style="color: white; margin-bottom: 20px; text-align: center;">${title}</h2>`;
-            
-            students.forEach(student => {
-                const fullStudentData = googleSheetData.find(s => s.room === student.room) || student;
-                const card = document.createElement('div');
-                card.className = 'student-detail-card';
-                
-                const statusColor = getStatusColor(fullStudentData.status);
-                
-                card.innerHTML = `
-                    <div class="card-header">
-                        <h4>${fullStudentData.name}</h4>
-                        <div class="status-badge" style="background: ${statusColor};">
-                            ${fullStudentData.status || '정상'}
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="info-row">
-                            <span class="info-label">기숙사 번호</span>
-                            <span class="info-value">${fullStudentData.room}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">상태</span>
-                            <span class="info-value">${fullStudentData.status || '정상'}</span>
-                        </div>
-                        ${fullStudentData.note ? `
-                            <div class="info-row">
-                                <span class="info-label">비고</span>
-                                <span class="info-value">${fullStudentData.note}</span>
-                            </div>
-                        ` : ''}
-                        ${fullStudentData.parentPhone ? `
-                            <div class="info-row">
-                                <span class="info-label">학부모 연락처</span>
-                                <span class="info-value">${fullStudentData.parentPhone}</span>
-                            </div>
-                        ` : ''}
-                        ${fullStudentData.studentPhone ? `
-                            <div class="info-row">
-                                <span class="info-label">본인 연락처</span>
-                                <span class="info-value">${fullStudentData.studentPhone}</span>
-                            </div>
-                        ` : ''}
-                        ${fullStudentData.librarySeats ? `
-                            <div class="info-row">
-                                <span class="info-label">라이브러리 좌석</span>
-                                <span class="info-value">${fullStudentData.librarySeats}</span>
-                            </div>
-                        ` : ''}
-                        ${fullStudentData.advisor ? `
-                            <div class="info-row">
-                                <span class="info-label">생활담임</span>
-                                <span class="info-value">${fullStudentData.advisor}</span>
-                            </div>
-                        ` : ''}
-                        ${fullStudentData.birthDate ? `
-                            <div class="info-row">
-                                <span class="info-label">생년월일</span>
-                                <span class="info-value">${fullStudentData.birthDate}</span>
-                            </div>
-                        ` : ''}
-                        ${fullStudentData.gender ? `
-                            <div class="info-row">
-                                <span class="info-label">성별</span>
-                                <span class="info-value">${fullStudentData.gender === 'male' ? '남학생' : '여학생'}</span>
-                            </div>
-                        ` : ''}
-                        ${fullStudentData.checkInDate ? `
-                            <div class="info-row">
-                                <span class="info-label">입소일</span>
-                                <span class="info-value">${fullStudentData.checkInDate}</span>
-                            </div>
-                        ` : ''}
-                        ${fullStudentData.school ? `
-                            <div class="info-row">
-                                <span class="info-label">출신고교</span>
-                                <span class="info-value">${fullStudentData.school}</span>
-                            </div>
-                        ` : ''}
-                        ${fullStudentData.class ? `
-                            <div class="info-row">
-                                <span class="info-label">반</span>
-                                <span class="info-value">${fullStudentData.class}</span>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-                
-                container.appendChild(card);
-            });
-        }
-
-        // 상태별 색상 반환
-        function getStatusColor(status) {
-            const colors = {
-                '정상': '#4facfe',
-                '외박': '#fa709a',
-                '신규': '#43e97b',
-                '퇴소': '#fee140',
-                '이동-': '#f093fb',
-                '이동+': '#38f9d7',
-                '등미': '#764ba2'
-            };
-            return colors[status] || '#4facfe';
-        }
-
-        // 통계 표시
+        // 통계 보기
         function showStatistics() {
-            // 간단한 통계 정보 표시
-            const today = new Date().toDateString();
-            const todayReports = submittedReports[today] || {};
+            var today = new Date().toDateString();
+            var todayReports = submittedReports[today] || {};
             
-            let message = '📊 **오늘 보고 현황**\n\n';
-            message += `📅 날짜: ${new Date().toLocaleDateString('ko-KR')}\n`;
-            message += `📋 총 보고서: ${Object.keys(todayReports).length}건\n\n`;
+            var message = '📊 오늘 보고 현황\n\n';
+            message += '📅 날짜: ' + new Date().toLocaleDateString('ko-KR') + '\n';
+            message += '📋 총 보고서: ' + Object.keys(todayReports).length + '건\n\n';
             
             if (Object.keys(todayReports).length > 0) {
-                message += '🏢 **동별 보고 현황**\n';
-                Object.entries(todayReports).forEach(([key, report]) => {
-                    message += `• ${report.building}동 ${report.floor}층 (${report.manager})\n`;
-                });
+                message += '🏢 동별 보고 현황\n';
+                for (var key in todayReports) {
+                    var report = todayReports[key];
+                    message += '• ' + report.building + '동 ' + report.floor + '층 (' + report.manager + ')\n';
+                }
             } else {
                 message += '아직 제출된 보고서가 없습니다.';
             }
@@ -1282,222 +1069,55 @@
         }
 
         // 연결 상태 확인
-        async function checkConnections() {
+        function checkConnections() {
             alert('🔧 연결 상태 확인 기능은 관리자 전용입니다.');
         }
 
         // 데이터 내보내기
         function exportData() {
-            const exportData = {
+            var exportData = {
                 reports: submittedReports,
                 timestamp: new Date().toISOString(),
                 version: '1.0'
             };
             
-            const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-                type: 'application/json'
-            });
+            var dataStr = JSON.stringify(exportData, null, 2);
+            var dataBlob = new Blob([dataStr], {type: 'application/json'});
             
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `dormitory-reports-${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'dormitory-reports-' + new Date().toISOString().split('T')[0] + '.json';
+            link.click();
             
             alert('데이터가 성공적으로 내보내졌습니다.');
         }
 
-        // 모의 검색 데이터 생성
-        function generateMockSearchData() {
-            console.log('모의 데이터 생성 중...');
-            googleSheetData = [];
-            
-            const buildings = ['A', 'B', 'C', 'D', 'E', 'F'];
-            const names = ['김민준', '이서준', '박도윤', '최예준', '정시우', '강주원', '조하준', '윤지호', '박서연', '이지윤', '김채원', '최수아', '정하은', '강민서', '조예은', '윤서진'];
-            const advisors = ['이영운', '김혜정', '이시우', '고승완', '남인달', '조영권', '황민철', '김건희', '강지훈', '송인수'];
-            const schools = ['대성고등학교', '경기고등학교', '서울고등학교', '부산고등학교', '대구고등학교'];
-            
-            Object.keys(dormitoryStructure).forEach(building => {
-                Object.keys(dormitoryStructure[building]).forEach(floor => {
-                    const floorInfo = dormitoryStructure[building][floor];
-                    const is3PersonRoom = parseInt(floor) === 4;
-                    
-                    for (let roomNum = floorInfo.start; roomNum <= floorInfo.end; roomNum++) {
-                        const roomCode = `${building}${roomNum}`;
-                        
-                        if (is3PersonRoom) {
-                            // 3인실 처리
-                            for (let bedNum = 1; bedNum <= 3; bedNum++) {
-                                const hasStudent = Math.random() > 0.3;
-                                const studentData = {
-                                    room: `${roomCode}-${bedNum}`,
-                                    originalRoom: roomCode,
-                                    bedNumber: bedNum,
-                                    name: hasStudent ? names[Math.floor(Math.random() * names.length)] : '미배정',
-                                    status: hasStudent ? ['정상', '외박', '신규'][Math.floor(Math.random() * 3)] : '',
-                                    note: hasStudent && Math.random() > 0.7 ? '테스트 비고' : '',
-                                    parentPhone: hasStudent ? `010-${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}` : '',
-                                    studentPhone: hasStudent ? `010-${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}` : '',
-                                    librarySeats: hasStudent ? `L${Math.floor(Math.random() * 300) + 1}` : '',
-                                    advisor: hasStudent ? advisors[Math.floor(Math.random() * advisors.length)] : '',
-                                    birthDate: hasStudent ? '2005-01-01' : '',
-                                    gender: genderMapping[building],
-                                    checkInDate: hasStudent ? '2024-03-01' : '',
-                                    school: hasStudent ? schools[Math.floor(Math.random() * schools.length)] : '',
-                                    class: hasStudent ? `${Math.floor(Math.random() * 3) + 1}학년` : '',
-                                    is3PersonRoom: true
-                                };
-                                googleSheetData.push(studentData);
-                            }
-                        } else {
-                            // 1인실 처리
-                            const hasStudent = Math.random() > 0.2;
-                            const studentData = {
-                                room: roomCode,
-                                name: hasStudent ? names[Math.floor(Math.random() * names.length)] : '미배정',
-                                status: hasStudent ? ['정상', '외박', '신규'][Math.floor(Math.random() * 3)] : '',
-                                note: hasStudent && Math.random() > 0.7 ? '테스트 비고' : '',
-                                parentPhone: hasStudent ? `010-${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}` : '',
-                                studentPhone: hasStudent ? `010-${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}` : '',
-                                librarySeats: hasStudent ? `L${Math.floor(Math.random() * 300) + 1}` : '',
-                                advisor: hasStudent ? advisors[Math.floor(Math.random() * advisors.length)] : '',
-                                birthDate: hasStudent ? '2005-01-01' : '',
-                                gender: genderMapping[building],
-                                checkInDate: hasStudent ? '2024-03-01' : '',
-                                school: hasStudent ? schools[Math.floor(Math.random() * schools.length)] : '',
-                                class: hasStudent ? `${Math.floor(Math.random() * 3) + 1}학년` : '',
-                                is3PersonRoom: false
-                            };
-                            googleSheetData.push(studentData);
-                        }
-                    }
-                });
-            });
-            
-            console.log(`모의 검색 데이터 ${googleSheetData.length}건 생성 완료`);
-        }
-    </script>
-</body>
-</html> 시간 표시 (24시간 형식)
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            const timeString = `${hours}:${minutes}:${seconds}`;
-            
-            // 날짜 표시
-            const year = now.getFullYear();
-            const month = now.getMonth() + 1;
-            const date = now.getDate();
-            const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-            const dayName = dayNames[now.getDay()];
-            const dateString = `${year}년 ${month}월 ${date}일 (${dayName})`;
-            
-            document.getElementById('time-display').textContent = timeString;
-            document.getElementById('date-display').textContent = dateString;
-        }
-
-        // 페이지 로드 시 초기화
+        // 이벤트 리스너 등록
         document.addEventListener('DOMContentLoaded', function() {
             // 시계 시작
             updateClock();
-            setInterval(updateClock, 1000); // 1초마다 업데이트
+            setInterval(updateClock, 1000);
             
+            // 데이터 로드
             loadSummaryData();
-            // 5분마다 자동 새로고침
+            loadGoogleSheetData();
             setInterval(loadSummaryData, 5 * 60 * 1000);
-        });
-
-        // 기숙사 구조 정의
-        const dormitoryStructure = {
-            'A': {
-                1: { start: 101, end: 160, type: '1인실' },
-                2: { start: 201, end: 262, type: '1인실' },
-                3: { start: 301, end: 362, type: '1인실' },
-                4: { start: 401, end: 432, type: '3인실' }
-            },
-            'B': {
-                1: { start: 101, end: 140, type: '1인실' },
-                2: { start: 201, end: 241, type: '1인실' },
-                3: { start: 301, end: 341, type: '1인실' },
-                4: { start: 401, end: 421, type: '3인실' }
-            },
-            'C': {
-                1: { start: 101, end: 161, type: '1인실' },
-                2: { start: 201, end: 262, type: '1인실' },
-                3: { start: 301, end: 362, type: '1인실' },
-                4: { start: 401, end: 432, type: '3인실' }
-            },
-            'D': {
-                1: { start: 101, end: 144, type: '1인실' },
-                2: { start: 201, end: 245, type: '1인실' },
-                3: { start: 301, end: 345, type: '1인실' },
-                4: { start: 401, end: 423, type: '3인실' }
-            },
-            'E': {
-                1: { start: 101, end: 176, type: '1인실' },
-                2: { start: 201, end: 278, type: '1인실' },
-                3: { start: 301, end: 378, type: '1인실' },
-                4: { start: 401, end: 440, type: '3인실' }
-            },
-            'F': {
-                1: { start: 101, end: 132, type: '1인실' },
-                2: { start: 201, end: 233, type: '1인실' },
-                3: { start: 301, end: 333, type: '1인실' },
-                4: { start: 401, end: 417, type: '3인실' }
-            }
-        };
-
-        // 집계 데이터 로드
-        function loadSummaryData() {
-            const today = new Date().toDateString();
-            const todayReports = submittedReports[today] || {};
             
-            let totalCounts = {
-                current: 0, absent: 0, new: 0, checkout: 0,
-                moveOut: 0, moveIn: 0, late: 0
-            };
-            
-            let maleCounts = {
-                current: 0, absent: 0, new: 0, checkout: 0,
-                moveOut: 0, moveIn: 0, late: 0
-            };
-            
-            let femaleCounts = {
-                current: 0, absent: 0, new: 0, checkout: 0,
-                moveOut: 0, moveIn: 0, late: 0
-            };
-            
-            // 보고서별 집계
-            Object.values(todayReports).forEach(report => {
-                totalCounts.current += report.current;
-                totalCounts.absent += report.absent;
-                totalCounts.new += report.new;
-                totalCounts.checkout += report.checkout;
-                totalCounts.moveOut += report.moveOut;
-                totalCounts.moveIn += report.moveIn;
-                totalCounts.late += report.late;
-                
-                const gender = genderMapping[report.building];
-                if (gender === 'male') {
-                    maleCounts.current += report.current;
-                    maleCounts.absent += report.absent;
-                    maleCounts.new += report.new;
-                    maleCounts.checkout += report.checkout;
-                    maleCounts.moveOut += report.moveOut;
-                    maleCounts.moveIn += report.moveIn;
-                    maleCounts.late += report.late;
-                } else {
-                    femaleCounts.current += report.current;
-                    femaleCounts.absent += report.absent;
-                    femaleCounts.new += report.new;
-                    femaleCounts.checkout += report.checkout;
-                    femaleCounts.moveOut += report.moveOut;
-                    femaleCounts.moveIn += report.moveIn;
-                    femaleCounts.late += report.late;
+            // 검색 이벤트
+            document.getElementById('search-input').addEventListener('input', performRealTimeSearch);
+            document.getElementById('search-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchStudent();
                 }
             });
+            document.getElementById('search-btn').addEventListener('click', searchStudent);
+            document.getElementById('close-search-btn').addEventListener('click', clearSearch);
             
-            //
+            // 버튼 이벤트
+            document.getElementById('show-stats-btn').addEventListener('click', showStatistics);
+            document.getElementById('check-connections-btn').addEventListener('click', checkConnections);
+            document.getElementById('export-data-btn').addEventListener('click', exportData);
+        });
+    </script>
+</body>
+</html>
