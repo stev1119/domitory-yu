@@ -1172,11 +1172,11 @@
         <div class="login-container">
             <h1><i class="fas fa-building"></i> 기숙사 관리 시스템</h1>
             <div class="login-options">
-                <div class="login-option" id="report-option">
+                <div class="login-option" id="report-option" style="cursor: pointer;">
                     <h3><i class="fas fa-clipboard-list"></i> 인원보고</h3>
                     <p>담당자가 인원 현황을 보고하는 화면</p>
                 </div>
-                <div class="login-option" id="dashboard-option">
+                <div class="login-option" id="dashboard-option" style="cursor: pointer;">
                     <h3><i class="fas fa-chart-bar"></i> 대시보드</h3>
                     <p>전체 현황을 조회하고 분석하는 화면</p>
                 </div>
@@ -1568,6 +1568,97 @@
         let persistentStatuses = JSON.parse(localStorage.getItem('persistentStatuses') || '{}');
         let currentUserType = '';
         
+        // 비밀번호 설정
+        const passwords = {
+            report: '7799',
+            dashboard: '1119'
+        };
+        
+        // 로그인 관련 함수 (수정된 버전)
+        function selectLoginType(type) {
+            console.log(`🔐 로그인 타입 선택: ${type}`);
+            currentUserType = type;
+            
+            const passwordContainer = document.getElementById('password-container');
+            const passwordInput = document.getElementById('password-input');
+            
+            if (passwordContainer && passwordInput) {
+                passwordContainer.classList.add('active');
+                passwordInput.focus();
+                passwordInput.placeholder = type === 'report' ? '인원보고 비밀번호 (7799)' : '대시보드 비밀번호 (1119)';
+                console.log('✅ 비밀번호 입력창 활성화');
+            } else {
+                console.error('❌ 비밀번호 입력 요소를 찾을 수 없습니다');
+            }
+        }
+
+        function handlePasswordKeyPress(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                login();
+            }
+        }
+
+        function login() {
+            const passwordInput = document.getElementById('password-input');
+            if (!passwordInput) {
+                console.error('❌ 비밀번호 입력 필드를 찾을 수 없습니다');
+                return;
+            }
+            
+            const password = passwordInput.value.trim();
+            console.log(`🔐 로그인 시도: 타입=${currentUserType}, 비밀번호=${password}`);
+            
+            if (!currentUserType) {
+                showMessage('먼저 인원보고 또는 대시보드를 선택해주세요.', 'warning');
+                return;
+            }
+            
+            if (password === passwords[currentUserType]) {
+                console.log('✅ 로그인 성공');
+                
+                const loginScreen = document.getElementById('login-screen');
+                const appContainer = document.getElementById('app-container');
+                
+                if (loginScreen && appContainer) {
+                    loginScreen.style.display = 'none';
+                    appContainer.classList.add('active');
+                    
+                    setupUserInterface();
+                    loadGoogleSheetData();
+                    
+                    showMessage(`${currentUserType === 'report' ? '인원보고' : '대시보드'} 로그인 성공!`, 'success');
+                } else {
+                    console.error('❌ 화면 전환 요소를 찾을 수 없습니다');
+                }
+            } else {
+                console.log('❌ 로그인 실패: 잘못된 비밀번호');
+                showMessage('비밀번호가 올바르지 않습니다.', 'error');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+
+        function logout() {
+            console.log('🚪 로그아웃');
+            
+            const loginScreen = document.getElementById('login-screen');
+            const appContainer = document.getElementById('app-container');
+            const passwordContainer = document.getElementById('password-container');
+            const passwordInput = document.getElementById('password-input');
+            
+            if (loginScreen) loginScreen.style.display = 'flex';
+            if (appContainer) appContainer.classList.remove('active');
+            if (passwordContainer) passwordContainer.classList.remove('active');
+            if (passwordInput) {
+                passwordInput.value = '';
+                passwordInput.placeholder = '비밀번호를 입력하세요';
+            }
+            
+            currentUserType = '';
+            showMessage('로그아웃되었습니다.', 'success');
+        }
+        
         // 초기화 시 submittedReports 구조 확인 및 수정
         function initializeReports() {
             const storedReports = localStorage.getItem('submittedReports');
@@ -1692,12 +1783,6 @@
         const genderMapping = {
             'A': 'male', 'B': 'male', 'C': 'male', 'F': 'male',
             'D': 'female', 'E': 'female'
-        };
-
-        // 비밀번호 설정
-        const passwords = {
-            report: '7799',
-            dashboard: '1119'
         };
 
         // 로그인 관련 함수 (수정된 버전)
