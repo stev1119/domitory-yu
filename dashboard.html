@@ -837,6 +837,7 @@
         // Google Sheets 데이터 로드 (검색용)
         async function loadGoogleSheetData() {
             try {
+                console.log('Google Sheets 데이터 로드 시작...');
                 const range = `${SHEET_NAME}!B:P`;
                 const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}?key=${GOOGLE_API_KEY}`;
                 
@@ -850,7 +851,7 @@
                 
                 googleSheetData = [];
                 
-                // 기본 데이터 처리 (인원보고 시스템과 동일한 로직)
+                // 1-3층 1인실 데이터 처리
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
                     if (row[0]) {
@@ -879,6 +880,51 @@
                         }
                     }
                 }
+                
+                // 4층 3인실 데이터 처리
+                const tripleRoomRanges = {
+                    'A': { start: 188, rooms: { start: 401, end: 432 } },
+                    'B': { start: 406, rooms: { start: 401, end: 421 } },
+                    'C': { start: 654, rooms: { start: 401, end: 432 } },
+                    'D': { start: 884, rooms: { start: 401, end: 423 } },
+                    'E': { start: 1185, rooms: { start: 401, end: 440 } },
+                    'F': { start: 1403, rooms: { start: 401, end: 417 } }
+                };
+
+                Object.keys(tripleRoomRanges).forEach(building => {
+                    const range = tripleRoomRanges[building];
+                    let currentRowIndex = range.start - 1;
+                    
+                    for (let roomNum = range.rooms.start; roomNum <= range.rooms.end; roomNum++) {
+                        const roomCode = `${building}${roomNum}`;
+                        
+                        for (let bedNum = 1; bedNum <= 3; bedNum++) {
+                            if (currentRowIndex < rows.length && rows[currentRowIndex]) {
+                                const row = rows[currentRowIndex];
+                                const studentData = {
+                                    room: `${roomCode}-${bedNum}`,
+                                    originalRoom: roomCode,
+                                    bedNumber: bedNum,
+                                    name: row[1] || '미배정',
+                                    status: row[2] || '',
+                                    note: row[4] || '',
+                                    parentPhone: row[5] || '',
+                                    studentPhone: row[6] || '',
+                                    librarySeats: row[7] || '',
+                                    advisor: row[8] || '',
+                                    birthDate: row[10] || '',
+                                    gender: genderMapping[building] || '',
+                                    checkInDate: row[12] || '',
+                                    school: row[13] || '',
+                                    class: row[14] || '',
+                                    is3PersonRoom: true
+                                };
+                                googleSheetData.push(studentData);
+                            }
+                            currentRowIndex++;
+                        }
+                    }
+                });
                 
                 console.log(`검색용 데이터 ${googleSheetData.length}건 로드 완료`);
                 
@@ -1266,32 +1312,72 @@
 
         // 모의 검색 데이터 생성
         function generateMockSearchData() {
+            console.log('모의 데이터 생성 중...');
             googleSheetData = [];
             
             const buildings = ['A', 'B', 'C', 'D', 'E', 'F'];
-            const names = ['김민준', '이서준', '박도윤', '최예준', '정시우', '강주원', '조하준', '윤지호'];
+            const names = ['김민준', '이서준', '박도윤', '최예준', '정시우', '강주원', '조하준', '윤지호', '박서연', '이지윤', '김채원', '최수아', '정하은', '강민서', '조예은', '윤서진'];
+            const advisors = ['이영운', '김혜정', '이시우', '고승완', '남인달', '조영권', '황민철', '김건희', '강지훈', '송인수'];
+            const schools = ['대성고등학교', '경기고등학교', '서울고등학교', '부산고등학교', '대구고등학교'];
             
-            buildings.forEach(building => {
-                for (let room = 101; room <= 150; room++) {
-                    const hasStudent = Math.random() > 0.3;
-                    if (hasStudent) {
-                        const studentData = {
-                            room: `${building}${room}`,
-                            name: names[Math.floor(Math.random() * names.length)],
-                            status: ['정상', '외박', '신규'][Math.floor(Math.random() * 3)],
-                            note: '',
-                            librarySeats: `L${Math.floor(Math.random() * 300) + 1}`,
-                            advisor: `담임${Math.floor(Math.random() * 5) + 1}`,
-                            gender: genderMapping[building],
-                            school: '테스트고등학교',
-                            class: `${Math.floor(Math.random() * 3) + 1}학년`
-                        };
-                        googleSheetData.push(studentData);
+            Object.keys(dormitoryStructure).forEach(building => {
+                Object.keys(dormitoryStructure[building]).forEach(floor => {
+                    const floorInfo = dormitoryStructure[building][floor];
+                    const is3PersonRoom = parseInt(floor) === 4;
+                    
+                    for (let roomNum = floorInfo.start; roomNum <= floorInfo.end; roomNum++) {
+                        const roomCode = `${building}${roomNum}`;
+                        
+                        if (is3PersonRoom) {
+                            // 3인실 처리
+                            for (let bedNum = 1; bedNum <= 3; bedNum++) {
+                                const hasStudent = Math.random() > 0.3;
+                                const studentData = {
+                                    room: `${roomCode}-${bedNum}`,
+                                    originalRoom: roomCode,
+                                    bedNumber: bedNum,
+                                    name: hasStudent ? names[Math.floor(Math.random() * names.length)] : '미배정',
+                                    status: hasStudent ? ['정상', '외박', '신규'][Math.floor(Math.random() * 3)] : '',
+                                    note: hasStudent && Math.random() > 0.7 ? '테스트 비고' : '',
+                                    parentPhone: hasStudent ? `010-${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}` : '',
+                                    studentPhone: hasStudent ? `010-${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}` : '',
+                                    librarySeats: hasStudent ? `L${Math.floor(Math.random() * 300) + 1}` : '',
+                                    advisor: hasStudent ? advisors[Math.floor(Math.random() * advisors.length)] : '',
+                                    birthDate: hasStudent ? '2005-01-01' : '',
+                                    gender: genderMapping[building],
+                                    checkInDate: hasStudent ? '2024-03-01' : '',
+                                    school: hasStudent ? schools[Math.floor(Math.random() * schools.length)] : '',
+                                    class: hasStudent ? `${Math.floor(Math.random() * 3) + 1}학년` : '',
+                                    is3PersonRoom: true
+                                };
+                                googleSheetData.push(studentData);
+                            }
+                        } else {
+                            // 1인실 처리
+                            const hasStudent = Math.random() > 0.2;
+                            const studentData = {
+                                room: roomCode,
+                                name: hasStudent ? names[Math.floor(Math.random() * names.length)] : '미배정',
+                                status: hasStudent ? ['정상', '외박', '신규'][Math.floor(Math.random() * 3)] : '',
+                                note: hasStudent && Math.random() > 0.7 ? '테스트 비고' : '',
+                                parentPhone: hasStudent ? `010-${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}` : '',
+                                studentPhone: hasStudent ? `010-${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}` : '',
+                                librarySeats: hasStudent ? `L${Math.floor(Math.random() * 300) + 1}` : '',
+                                advisor: hasStudent ? advisors[Math.floor(Math.random() * advisors.length)] : '',
+                                birthDate: hasStudent ? '2005-01-01' : '',
+                                gender: genderMapping[building],
+                                checkInDate: hasStudent ? '2024-03-01' : '',
+                                school: hasStudent ? schools[Math.floor(Math.random() * schools.length)] : '',
+                                class: hasStudent ? `${Math.floor(Math.random() * 3) + 1}학년` : '',
+                                is3PersonRoom: false
+                            };
+                            googleSheetData.push(studentData);
+                        }
                     }
-                }
+                });
             });
             
-            console.log('모의 검색 데이터 생성 완료');
+            console.log(`모의 검색 데이터 ${googleSheetData.length}건 생성 완료`);
         }
     </script>
 </body>
@@ -1323,6 +1409,46 @@
             // 5분마다 자동 새로고침
             setInterval(loadSummaryData, 5 * 60 * 1000);
         });
+
+        // 기숙사 구조 정의
+        const dormitoryStructure = {
+            'A': {
+                1: { start: 101, end: 160, type: '1인실' },
+                2: { start: 201, end: 262, type: '1인실' },
+                3: { start: 301, end: 362, type: '1인실' },
+                4: { start: 401, end: 432, type: '3인실' }
+            },
+            'B': {
+                1: { start: 101, end: 140, type: '1인실' },
+                2: { start: 201, end: 241, type: '1인실' },
+                3: { start: 301, end: 341, type: '1인실' },
+                4: { start: 401, end: 421, type: '3인실' }
+            },
+            'C': {
+                1: { start: 101, end: 161, type: '1인실' },
+                2: { start: 201, end: 262, type: '1인실' },
+                3: { start: 301, end: 362, type: '1인실' },
+                4: { start: 401, end: 432, type: '3인실' }
+            },
+            'D': {
+                1: { start: 101, end: 144, type: '1인실' },
+                2: { start: 201, end: 245, type: '1인실' },
+                3: { start: 301, end: 345, type: '1인실' },
+                4: { start: 401, end: 423, type: '3인실' }
+            },
+            'E': {
+                1: { start: 101, end: 176, type: '1인실' },
+                2: { start: 201, end: 278, type: '1인실' },
+                3: { start: 301, end: 378, type: '1인실' },
+                4: { start: 401, end: 440, type: '3인실' }
+            },
+            'F': {
+                1: { start: 101, end: 132, type: '1인실' },
+                2: { start: 201, end: 233, type: '1인실' },
+                3: { start: 301, end: 333, type: '1인실' },
+                4: { start: 401, end: 417, type: '3인실' }
+            }
+        };
 
         // 집계 데이터 로드
         function loadSummaryData() {
