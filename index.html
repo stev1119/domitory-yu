@@ -1172,11 +1172,11 @@
         <div class="login-container">
             <h1><i class="fas fa-building"></i> 기숙사 관리 시스템</h1>
             <div class="login-options">
-                <div class="login-option" onclick="selectLoginType('report')" style="cursor: pointer;">
+                <div class="login-option" id="report-option">
                     <h3><i class="fas fa-clipboard-list"></i> 인원보고</h3>
                     <p>담당자가 인원 현황을 보고하는 화면</p>
                 </div>
-                <div class="login-option" onclick="selectLoginType('dashboard')" style="cursor: pointer;">
+                <div class="login-option" id="dashboard-option">
                     <h3><i class="fas fa-chart-bar"></i> 대시보드</h3>
                     <p>전체 현황을 조회하고 분석하는 화면</p>
                 </div>
@@ -1817,6 +1817,54 @@
 
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM 로딩 완료 - 이벤트 리스너 설정 시작');
+            
+            // 로그인 관련 이벤트 리스너 설정
+            const reportOption = document.getElementById('report-option');
+            const dashboardOption = document.getElementById('dashboard-option');
+            const passwordInput = document.getElementById('password-input');
+            const loginBtn = document.getElementById('login-btn');
+            
+            if (reportOption) {
+                reportOption.addEventListener('click', function() {
+                    console.log('📝 인원보고 옵션 클릭됨');
+                    selectLoginType('report');
+                });
+                console.log('✅ 인원보고 이벤트 리스너 설정 완료');
+            } else {
+                console.error('❌ 인원보고 옵션 요소를 찾을 수 없음');
+            }
+            
+            if (dashboardOption) {
+                dashboardOption.addEventListener('click', function() {
+                    console.log('📊 대시보드 옵션 클릭됨');
+                    selectLoginType('dashboard');
+                });
+                console.log('✅ 대시보드 이벤트 리스너 설정 완료');
+            } else {
+                console.error('❌ 대시보드 옵션 요소를 찾을 수 없음');
+            }
+            
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        console.log('⌨️ Enter 키 입력됨');
+                        login();
+                    }
+                });
+                console.log('✅ 비밀번호 입력 이벤트 리스너 설정 완료');
+            }
+            
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    console.log('🔐 로그인 버튼 클릭됨');
+                    login();
+                });
+                console.log('✅ 로그인 버튼 이벤트 리스너 설정 완료');
+            }
+            
+            // 기존 초기화 코드
             initializeReports(); // 보고서 데이터 구조 초기화
             initializeThreePersonRooms();
             updateDailyReset();
@@ -1830,6 +1878,8 @@
                     countElement.textContent = this.value || '0';
                 });
             });
+            
+            console.log('🎉 모든 초기화 완료');
         });
 
         // 탭 전환
