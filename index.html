@@ -851,6 +851,7 @@
                 moveIn: parseInt(document.getElementById('move-in-input').value) || 0,
                 late: parseInt(document.getElementById('late-input').value) || 0,
                 timestamp: new Date().toISOString(),
+                isRevision: isRevision,
                 students: getStudentDetails(building, floor)
             };
             
@@ -928,11 +929,14 @@
 
         // 잔디 웹훅 전송
         async function sendToJandi(reportData) {
-            let message = `🏢 **기숙사 인원 보고**\n\n`;
+            let message = `🏢 **기숙사 인원 보고${reportData.isRevision ? ' (수정보고)' : ''}**\n\n`;
             message += `👤 **담당자**: ${reportData.manager}\n`;
             message += `🏢 **위치**: ${reportData.building}동 ${reportData.floor}층\n`;
-            message += `📅 **보고시간**: ${new Date(reportData.timestamp).toLocaleString('ko-KR')}\n\n`;
-            message += `📊 **인원 현황**\n`;
+            message += `📅 **보고시간**: ${new Date(reportData.timestamp).toLocaleString('ko-KR')}\n`;
+            if (reportData.isRevision) {
+                message += `⚠️ **수정보고**: 기존 보고 수정됨\n`;
+            }
+            message += `\n📊 **인원 현황**\n`;
             message += `• 현재원: ${reportData.current}명\n`;
             message += `• 외박: ${reportData.absent}명\n`;
             message += `• 신규: ${reportData.new}명\n`;
@@ -965,10 +969,10 @@
             
             const payload = {
                 body: message,
-                connectColor: '#667eea',
+                connectColor: reportData.isRevision ? '#fa709a' : '#667eea',
                 connectInfo: [{
-                    title: '📊 기숙사 관리 시스템',
-                    description: `${reportData.building}동 ${reportData.floor}층 인원 현황 보고`
+                    title: reportData.isRevision ? '📝 기숙사 관리 시스템 (수정보고)' : '📊 기숙사 관리 시스템',
+                    description: `${reportData.building}동 ${reportData.floor}층 인원 현황 보고${reportData.isRevision ? ' - 수정됨' : ''}`
                 }]
             };
             
