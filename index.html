@@ -1561,7 +1561,11 @@
                 `;
                 document.getElementById('report-tab').style.display = 'none';
                 document.getElementById('summary-tab').classList.add('active');
-                showTab('summary');
+                document.getElementById('report-tab').classList.remove('active');
+                // 대시보드 로그인 시 즉시 집계 데이터 로드
+                setTimeout(() => {
+                    loadSummaryData();
+                }, 100);
             }
         }
 
@@ -1593,9 +1597,12 @@
             
             // 선택된 탭 활성화
             document.getElementById(tabName + '-tab').classList.add('active');
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
             
             if (tabName === 'summary') {
+                console.log('🔄 현황 집계 탭 활성화 - 데이터 로드 시작');
                 loadSummaryData();
             }
         }
@@ -2254,8 +2261,13 @@
 
         // 집계 데이터 로드 (업데이트된 집계 방식)
         function loadSummaryData() {
+            console.log('📊 집계 데이터 로드 시작...');
             const today = new Date().toDateString();
             const todayReports = submittedReports[today] || {};
+            
+            console.log('📅 오늘 날짜:', today);
+            console.log('📝 오늘 제출된 보고서:', Object.keys(todayReports).length, '건');
+            console.log('📋 전체 보고서 데이터:', submittedReports);
             
             let totalCounts = {
                 current: 0, absent: 0, new: 0, checkout: 0,
@@ -2273,34 +2285,42 @@
             };
             
             // 보고서별 집계
-            Object.values(todayReports).forEach(report => {
-                totalCounts.current += report.current;
-                totalCounts.absent += report.absent;
-                totalCounts.new += report.new;
-                totalCounts.checkout += report.checkout;
-                totalCounts.moveOut += report.moveOut;
-                totalCounts.moveIn += report.moveIn;
-                totalCounts.late += report.late;
+            Object.entries(todayReports).forEach(([key, report]) => {
+                console.log(`📊 ${key} 보고서 집계:`, report);
+                
+                totalCounts.current += report.current || 0;
+                totalCounts.absent += report.absent || 0;
+                totalCounts.new += report.new || 0;
+                totalCounts.checkout += report.checkout || 0;
+                totalCounts.moveOut += report.moveOut || 0;
+                totalCounts.moveIn += report.moveIn || 0;
+                totalCounts.late += report.late || 0;
                 
                 const gender = genderMapping[report.building];
+                console.log(`🏢 ${report.building}동 성별:`, gender);
+                
                 if (gender === 'male') {
-                    maleCounts.current += report.current;
-                    maleCounts.absent += report.absent;
-                    maleCounts.new += report.new;
-                    maleCounts.checkout += report.checkout;
-                    maleCounts.moveOut += report.moveOut;
-                    maleCounts.moveIn += report.moveIn;
-                    maleCounts.late += report.late;
-                } else {
-                    femaleCounts.current += report.current;
-                    femaleCounts.absent += report.absent;
-                    femaleCounts.new += report.new;
-                    femaleCounts.checkout += report.checkout;
-                    femaleCounts.moveOut += report.moveOut;
-                    femaleCounts.moveIn += report.moveIn;
-                    femaleCounts.late += report.late;
+                    maleCounts.current += report.current || 0;
+                    maleCounts.absent += report.absent || 0;
+                    maleCounts.new += report.new || 0;
+                    maleCounts.checkout += report.checkout || 0;
+                    maleCounts.moveOut += report.moveOut || 0;
+                    maleCounts.moveIn += report.moveIn || 0;
+                    maleCounts.late += report.late || 0;
+                } else if (gender === 'female') {
+                    femaleCounts.current += report.current || 0;
+                    femaleCounts.absent += report.absent || 0;
+                    femaleCounts.new += report.new || 0;
+                    femaleCounts.checkout += report.checkout || 0;
+                    femaleCounts.moveOut += report.moveOut || 0;
+                    femaleCounts.moveIn += report.moveIn || 0;
+                    femaleCounts.late += report.late || 0;
                 }
             });
+            
+            console.log('📊 총 집계 결과:', totalCounts);
+            console.log('👨 남학생 집계:', maleCounts);
+            console.log('👩 여학생 집계:', femaleCounts);
             
             // 전체 현황 업데이트
             document.getElementById('total-current').textContent = totalCounts.current;
@@ -2324,6 +2344,13 @@
             
             // 동별/층별 보고 현황 표시
             displayBuildingReports(todayReports);
+            
+            // 집계 완료 메시지
+            if (Object.keys(todayReports).length > 0) {
+                showMessage(`${Object.keys(todayReports).length}개 보고서 집계 완료`, 'success');
+            } else {
+                showMessage('오늘 제출된 보고서가 없습니다', 'warning');
+            }
         }
 
         // 동별/층별 보고 현황 표시
