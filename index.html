@@ -2263,11 +2263,36 @@
         function loadSummaryData() {
             console.log('📊 집계 데이터 로드 시작...');
             const today = new Date().toDateString();
+            
+            // submittedReports 구조 확인 및 수정
+            console.log('📋 전체 보고서 데이터 타입:', typeof submittedReports);
+            console.log('📋 전체 보고서 데이터:', submittedReports);
+            
+            // 배열로 저장되어 있다면 객체로 변환
+            if (Array.isArray(submittedReports)) {
+                console.log('⚠️ 보고서 데이터가 배열 형태입니다. 객체로 변환 중...');
+                const newReports = {};
+                submittedReports.forEach((report, index) => {
+                    if (report && typeof report === 'object') {
+                        // 임시로 오늘 날짜로 저장 (실제로는 보고서의 timestamp를 사용해야 함)
+                        const reportDate = report.timestamp ? new Date(report.timestamp).toDateString() : today;
+                        if (!newReports[reportDate]) {
+                            newReports[reportDate] = {};
+                        }
+                        const key = `${report.building}${report.floor}`;
+                        newReports[reportDate][key] = report;
+                    }
+                });
+                submittedReports = newReports;
+                localStorage.setItem('submittedReports', JSON.stringify(submittedReports));
+                console.log('✅ 보고서 데이터 구조 변환 완료:', submittedReports);
+            }
+            
             const todayReports = submittedReports[today] || {};
             
             console.log('📅 오늘 날짜:', today);
             console.log('📝 오늘 제출된 보고서:', Object.keys(todayReports).length, '건');
-            console.log('📋 전체 보고서 데이터:', submittedReports);
+            console.log('📋 오늘 보고서 상세:', todayReports);
             
             let totalCounts = {
                 current: 0, absent: 0, new: 0, checkout: 0,
@@ -2318,6 +2343,57 @@
                 }
             });
             
+            // 오늘 데이터가 없다면 최근 데이터 사용
+            if (Object.keys(todayReports).length === 0) {
+                console.log('⚠️ 오늘 데이터가 없습니다. 최근 데이터를 찾는 중...');
+                const allDates = Object.keys(submittedReports).sort().reverse();
+                console.log('📅 사용 가능한 날짜들:', allDates);
+                
+                if (allDates.length > 0) {
+                    const latestDate = allDates[0];
+                    const latestReports = submittedReports[latestDate] || {};
+                    console.log(`📅 최근 데이터 (${latestDate}) 사용:`, latestReports);
+                    
+                    Object.entries(latestReports).forEach(([key, report]) => {
+                        console.log(`📊 ${key} 최근 보고서 집계:`, report);
+                        
+                        totalCounts.current += report.current || 0;
+                        totalCounts.absent += report.absent || 0;
+                        totalCounts.new += report.new || 0;
+                        totalCounts.checkout += report.checkout || 0;
+                        totalCounts.moveOut += report.moveOut || 0;
+                        totalCounts.moveIn += report.moveIn || 0;
+                        totalCounts.late += report.late || 0;
+                        
+                        const gender = genderMapping[report.building];
+                        if (gender === 'male') {
+                            maleCounts.current += report.current || 0;
+                            maleCounts.absent += report.absent || 0;
+                            maleCounts.new += report.new || 0;
+                            maleCounts.checkout += report.checkout || 0;
+                            maleCounts.moveOut += report.moveOut || 0;
+                            maleCounts.moveIn += report.moveIn || 0;
+                            maleCounts.late += report.late || 0;
+                        } else if (gender === 'female') {
+                            femaleCounts.current += report.current || 0;
+                            femaleCounts.absent += report.absent || 0;
+                            femaleCounts.new += report.new || 0;
+                            femaleCounts.checkout += report.checkout || 0;
+                            femaleCounts.moveOut += report.moveOut || 0;
+                            femaleCounts.moveIn += report.moveIn || 0;
+                            femaleCounts.late += report.late || 0;
+                        }
+                    });
+                    
+                    // 최근 데이터로 동별/층별 보고 현황 표시
+                    displayBuildingReports(latestReports);
+                    showMessage(`최근 데이터 (${latestDate})로 집계했습니다`, 'warning');
+                }
+            } else {
+                displayBuildingReports(todayReports);
+                showMessage(`${Object.keys(todayReports).length}개 보고서 집계 완료`, 'success');
+            }
+            
             console.log('📊 총 집계 결과:', totalCounts);
             console.log('👨 남학생 집계:', maleCounts);
             console.log('👩 여학생 집계:', femaleCounts);
@@ -2341,16 +2417,6 @@
             document.getElementById('female-absent').textContent = femaleCounts.absent;
             document.getElementById('female-new').textContent = femaleCounts.new;
             document.getElementById('female-checkout').textContent = femaleCounts.checkout;
-            
-            // 동별/층별 보고 현황 표시
-            displayBuildingReports(todayReports);
-            
-            // 집계 완료 메시지
-            if (Object.keys(todayReports).length > 0) {
-                showMessage(`${Object.keys(todayReports).length}개 보고서 집계 완료`, 'success');
-            } else {
-                showMessage('오늘 제출된 보고서가 없습니다', 'warning');
-            }
         }
 
         // 동별/층별 보고 현황 표시
